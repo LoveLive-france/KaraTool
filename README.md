@@ -18,4 +18,4 @@ Télécharger `ffmpeg.exe` et le placer dans le même dossier que le `.py`.
 Bien avoir le ffmpeg.exe au même endroit que le .py : c'est important car il sera embarqué directement dans l'app.
 
 ### _Commande de création_
-```pyinstaller --clean --onefile --windowed --add-binary "ffmpeg.exe;." youtube_downloader.py```
+```pyinstaller --clean --onefile --windowed --add-binary "tools/ffmpeg.exe;." src/main.py```
