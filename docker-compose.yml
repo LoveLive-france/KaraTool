@@ -1,0 +1,12 @@
+services:
+  compiler:
+    image: batonogov/pyinstaller-windows:latest
+    entrypoint: /bin/bash
+    working_dir: /src/
+    volumes:
+      - ./:/src/
+    command: >
+      -c "
+      pip install -r requirements.txt &&
+      pyinstaller --noconsole --onefile --add-data 'V1.3/ffmpeg.exe;.' V1.3/youtube_downloader.py
+      "
