@@ -48,7 +48,7 @@ class DownloadManager:
         self._downloads = []
         self.download_folder = os.getcwd()
         self.cookies_file = None
-        self._on_update = on_update  # callback(item_id, status, progress)
+        self._on_update = on_update
 
     def set_folder(self, folder):
         self.download_folder = folder

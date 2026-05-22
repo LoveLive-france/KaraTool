@@ -11,8 +11,6 @@ class TabTelechargeur(ctk.CTkFrame):
         self._build()
         self._refresh_label_cookies()
 
-    # ---------- BUILD ----------
-
     def _build(self):
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -58,8 +56,6 @@ class TabTelechargeur(ctk.CTkFrame):
         self._label_cookies = ctk.CTkLabel(pied, text="", font=("Arial", 14, "bold"))
         self._label_cookies.pack(side="right", padx=10)
 
-    # ---------- CARDS ----------
-
     def _creer_carte(self, item_id, url):
         carte = ctk.CTkFrame(self._frame_liste, corner_radius=12)
         carte.pack(fill="x", padx=10, pady=8)
@@ -92,11 +88,8 @@ class TabTelechargeur(ctk.CTkFrame):
             carte["statut"].configure(text_color="gray")
         carte["progression"].set(progression)
 
-    # appelé depuis le thread de téléchargement → délégué au thread principal
     def _schedule_update(self, item_id, statut, progression):
         self.after(0, lambda: self._mettre_a_jour_carte(item_id, statut, progression))
-
-    # ---------- ACTIONS ----------
 
     def _on_ajouter_lien(self):
         url = self._entree_url.get().strip()
