@@ -20,8 +20,8 @@ def resource_path(relative_path):
 #YTDLP_PATH = resource_path("yt-dlp.exe")
 #FFMPEG_PATH = resource_path("ffmpeg.exe")
 
-print("MEIPASS:", sys._MEIPASS if hasattr(sys, "_MEIPASS") else "NO MEIPASS")
-print("FILES:", os.listdir(sys._MEIPASS))
+#print("MEIPASS:", sys._MEIPASS if hasattr(sys, "_MEIPASS") else "NO MEIPASS")
+#print("FILES:", os.listdir(sys._MEIPASS))
 
 def get_ffmpeg_path():
     if getattr(sys, "frozen", False):
@@ -184,6 +184,9 @@ def run_download():
             "no_warnings": True,
             "progress_hooks": [lambda x, item_id=item_id: hook(x, item_id)],
         }
+
+        if cookies_file and os.path.exists(cookies_file):
+            ydl_opts["cookiefile"] = cookies_file
 
         if fmt == "Vidéo":
             ydl_opts.update({
