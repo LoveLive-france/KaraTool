@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import filedialog
 from core.text_exporter import exporter_texte
-from core.formattage_kara import romaniser_texte
+from core.formattage_kara.romaniseur import romaniser_texte
 
 
 class TabTexteJaponais(ctk.CTkFrame):
