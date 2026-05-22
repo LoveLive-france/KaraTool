@@ -2,3 +2,5 @@ customtkinter
 yt-dlp
 pyinstaller
 pytest
+cutlet
+fugashi[unidic-lite]
