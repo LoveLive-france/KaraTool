@@ -6,7 +6,7 @@ Un petit outil pour aider à la création de karaokés
 ### _Dépendances Python_
 Installer les bibliothèques nécessaires :
 ```
-pip install customtkinter yt-dlp pyinstaller
+pip install -r requirements.txt
 ```
 
 ### _FFmpeg_
