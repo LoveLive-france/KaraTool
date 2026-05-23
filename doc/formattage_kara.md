@@ -29,6 +29,8 @@ Texte japonais
       │  Corrige la particule へ romanisée "e" → "he"
       ▼
 [6] Post-traitement
+      │  Rattache les n isolés au mot précédent et suivant
+      │  Remplace les ra onomatopéiques par la
       │  Extrait les parenthèses sur de nouvelles lignes
       │  Supprime la ponctuation (sauf apostrophes)
       ▼
@@ -80,10 +82,23 @@ Le seuil est configurable via `_SEUIL_RATIO_LONGUEUR = 0.7`.
 
 Point d'entrée : `post_traiter(texte: str) → str`
 
-Deux transformations successives :
+Quatre transformations successives :
 
-1. **Extraction des parenthèses** — le contenu entre `()` ou `（）` est déplacé sur une nouvelle ligne
-2. **Suppression de la ponctuation** — tout sauf les caractères de mot, les espaces, les apostrophes et les sauts de ligne
+1. **Rattachement des n isolés** — un `n` seul entre deux mots est fusionné sans espace (`omoeta n da` → `omoetanda`)
+2. **Correction ra → la** — les `ra` isolés ou en séquences pures sont remplacés par `la` pour refléter la prononciation chantée ; les `ra` dans de vrais mots (`sakura`, `naraba`) et les majuscules (`RARARA`) ne sont pas touchés
+3. **Extraction des parenthèses** — le contenu entre `()` ou `（）` est déplacé sur une nouvelle ligne
+4. **Suppression de la ponctuation** — tout sauf les caractères de mot, les espaces, les apostrophes et les sauts de ligne
+
+**Sous-fonctions de `_corriger_ra_en_la` :**
+
+| Fonction | Forme ciblée | Exemple | Résultat |
+|----------|-------------|---------|----------|
+| `_remplacer_ra_repetes_en_la` | Mot composé uniquement de `ra` répétés | `rarara` | `lalala` |
+| `_remplacer_ra_isole_en_la` | `ra` seul entre espaces | `ra` | `la` |
+| `_corriger_ra_titre_en_la` | `Ra` titre (artefact cutlet après ponctuation) | `Ra`, `Rara` | `la`, `lala` |
+| `_fusionner_la_adjacents` | Groupes `la` séparés par espace seul (artefact cutlet sur longues séquences) | `lalala lala` | `lalalalala` |
+
+Les `ra` dans de vrais mots (`sakura`, `naraba`) et en majuscules (`RARARA`) ne sont pas touchés.
 
 **Exemple :**
 ```
@@ -120,7 +135,7 @@ II NE
 |---------|-----------------|
 | `tests/formattage_kara/test_romaniseur.py` | Romanisation hiragana, kanji, katakana ; préservation du latin ; particules ; multi-lignes |
 | `tests/formattage_kara/test_detecteur_emprunts.py` | Translittération directe, abréviations, formes identiques, texte sans katakana |
-| `tests/formattage_kara/test_post_traitement.py` | Suppression de ponctuation, apostrophes, parenthèses ASCII et japonaises |
+| `tests/formattage_kara/test_post_traitement.py` | Suppression de ponctuation, apostrophes, parenthèses ASCII et japonaises, rattachement des n isolés, correction ra → la |
 
 Les tests sont lancés automatiquement avant chaque commit via le hook `pre-commit`.
 
