@@ -53,7 +53,7 @@ class TabEncodeur(ctk.CTkFrame):
         def sync_bitrate(event=None):
             try:
                 self.video_bitrate.set(int(self.bitrate_entry.get()))
-            except:
+            except Exception:
                 pass
 
         self.bitrate_entry.bind("<KeyRelease>", sync_bitrate)

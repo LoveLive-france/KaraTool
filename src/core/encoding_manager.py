@@ -64,7 +64,7 @@ def has_opus_audio(file):
     try:
         data = json.loads(result.stdout)
         return data["streams"][0]["codec_name"] == "opus"
-    except:
+    except Exception:
         return False
 
 class EncodingManager:
