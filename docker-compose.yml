@@ -8,5 +8,5 @@ services:
     command: >
       -c "
       pip install -r requirements.txt &&
-      pyinstaller --noconsole --onefile --add-data 'tools/ffmpeg.exe;.' --add-data 'src/template.ass;.' --collect-data unidic_lite --collect-all fugashi src/main.py
+      bash build.sh
       "
