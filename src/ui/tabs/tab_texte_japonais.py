@@ -15,7 +15,7 @@ class TabTexteJaponais(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent)
         self._styles_disponibles = lire_styles_disponibles()
-        self._styles_selectionnes = []
+        self._styles_selectionnes = self._selection_defaut()
         self._cadre_deroulant: ctk.CTkFrame | None = None
         self._cases: dict[str, ctk.BooleanVar] = {}
         self._deroulant_ouvert = False
@@ -113,10 +113,13 @@ class TabTexteJaponais(ctk.CTkFrame):
         self._cadre_deroulant.lift()
         self._deroulant_ouvert = True
 
+    def _selection_defaut(self) -> list[str]:
+        return [self._styles_disponibles[0]["nom"]] if self._styles_disponibles else []
+
     def _fermer_deroulant(self):
         self._styles_selectionnes = [
             nom for nom, var in self._cases.items() if var.get()
-        ]
+        ] or self._selection_defaut()
         self._bouton_styles.configure(text=self._label_styles())
         self._cadre_deroulant.destroy()
         self._cadre_deroulant = None
@@ -125,7 +128,7 @@ class TabTexteJaponais(ctk.CTkFrame):
     def _reinitialiser_styles(self):
         reinitialiser_styles()
         self._styles_disponibles = lire_styles_disponibles()
-        self._styles_selectionnes = []
+        self._styles_selectionnes = self._selection_defaut()
         self._bouton_styles.configure(text=self._label_styles())
         if self._deroulant_ouvert:
             self._fermer_deroulant()
@@ -138,13 +141,10 @@ class TabTexteJaponais(ctk.CTkFrame):
         if not chemin:
             return
         nouveaux = extraire_styles_depuis_ass(chemin)
-        noms_avant = {s["nom"] for s in self._styles_disponibles}
         fusionnes = fusionner_styles(self._styles_disponibles, nouveaux)
         sauvegarder_styles(fusionnes)
         self._styles_disponibles = fusionnes
-        self._styles_selectionnes.extend(
-            s["nom"] for s in fusionnes if s["nom"] not in noms_avant
-        )
+        self._bouton_styles.configure(text=self._label_styles())
         if self._deroulant_ouvert:
             self._fermer_deroulant()
             self._ouvrir_selecteur_styles()
