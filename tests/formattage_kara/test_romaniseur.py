@@ -138,6 +138,21 @@ def test_lorsque_katakana_emprunt_dans_phrase_alors_majuscules():
     assert "SOCCER" in resultat
 
 
+def test_lorsque_katakana_emprunt_encadre_par_japonais_alors_espaces_autour():
+    """Lorsqu'un emprunt katakana est encadré par du japonais, alors un espace est présent de chaque côté."""
+    # Given
+    phrase = "バグらすミッション"
+    # When
+    resultat = romaniser_texte(phrase)
+    # Then
+    assert "BUG" in resultat
+    assert "MISSION" in resultat
+    bug_pos = resultat.index("BUG")
+    mission_pos = resultat.index("MISSION")
+    assert resultat[bug_pos + len("BUG")] == " "
+    assert resultat[mission_pos - 1] == " "
+
+
 def test_lorsque_katakana_nom_propre_etranger_alors_title_case():
     """Lorsqu'un emprunt katakana est un nom propre reconnu par cutlet, alors il est retourné en title case."""
     # Given
@@ -146,6 +161,16 @@ def test_lorsque_katakana_nom_propre_etranger_alors_title_case():
     resultat = romaniser_texte(phrase)
     # Then
     assert "Nike" in resultat
+
+
+def test_lorsque_nom_propre_title_case_adjacent_a_romaji_alors_espace_insere():
+    """Lorsqu'un nom propre en title case est adjacent à du romaji minuscule, alors un espace est inséré."""
+    # Given
+    phrase = "アーサーならアヴァロンへと"
+    # When
+    resultat = romaniser_texte(phrase)
+    # Then
+    assert "nara Avalon" in resultat
 
 
 def test_lorsque_particule_he_alors_romanisee_he():

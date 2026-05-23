@@ -9,6 +9,7 @@ _JAPONAIS = re.compile(r"[ぁ-ん゛゜ァ-ヾ一-龯]")
 _PARENS = re.compile(r"[（(]([^）)]*)[）)]")
 _SENTINEL_PARENS = "__{}__"
 _SENTINEL_LATIN_ORIGINAL = "\x01{}\x01"
+_SENTINEL_LATIN_EMPRUNT = "\x02{}\x02"
 
 
 def romaniser_texte(texte_japonais: str, conserver_casse_latine: bool = False) -> str:
@@ -65,7 +66,7 @@ def _romaniser_ligne(ligne: str, conserver_casse_latine: bool = False) -> str:
     ligne = remplacer_emprunts_katakana(ligne)
 
     def _proteger_latin_emprunt(m):
-        cle = f"__L{len(segments_proteges)}__"
+        cle = _SENTINEL_LATIN_EMPRUNT.format(len(segments_proteges))
         segments_proteges[cle] = _casse_segment_latin(m.group(0))
         return cle
 
@@ -75,7 +76,15 @@ def _romaniser_ligne(ligne: str, conserver_casse_latine: bool = False) -> str:
     for cle, valeur in segments_proteges.items():
         romaji = romaji.replace(cle, valeur)
 
-    return romaji
+    return _separer_emprunts_du_romaji_adjacent(romaji)
+
+
+def _separer_emprunts_du_romaji_adjacent(texte: str) -> str:
+    # @devnote cutlet supprime les espaces entre tokens japonais et non-japonais adjacents —
+    # on restaure les espaces aux frontières majuscule / minuscule dans les deux sens
+    texte = re.sub(r"([A-Z]{2,})([a-z])", r"\1 \2", texte)
+    texte = re.sub(r"([a-z])([A-Z])", r"\1 \2", texte)
+    return texte
 
 
 def _casse_segment_latin(segment: str) -> str:
