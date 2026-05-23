@@ -69,3 +69,43 @@ def test_lorsque_ponctuation_japonaise_presente_alors_retiree():
     resultat = post_traiter(texte)
     # Then
     assert resultat == "tokigatomareba"
+
+
+def test_lorsque_n_isole_entre_deux_mots_alors_rattache():
+    """Lorsqu'un n isolé est entre deux mots, alors il est rattaché sans espaces."""
+    # Given
+    texte = "omoeta n da"
+    # When
+    resultat = post_traiter(texte)
+    # Then
+    assert resultat == "omoetanda"
+
+
+def test_lorsque_plusieurs_n_isoles_alors_tous_rattaches():
+    """Lorsque plusieurs n isolés sont présents, alors ils sont tous rattachés."""
+    # Given
+    texte = "hontou na n da"
+    # When
+    resultat = post_traiter(texte)
+    # Then
+    assert resultat == "hontou nanda"
+
+
+def test_lorsque_n_en_fin_de_mot_alors_non_modifie():
+    """Lorsque le n est en fin de mot, alors il n'est pas modifié."""
+    # Given
+    texte = "wakaran"
+    # When
+    resultat = post_traiter(texte)
+    # Then
+    assert resultat == "wakaran"
+
+
+def test_lorsque_n_en_debut_de_mot_alors_non_modifie():
+    """Lorsque le n est en début de mot, alors il n'est pas modifié."""
+    # Given
+    texte = "nan darou"
+    # When
+    resultat = post_traiter(texte)
+    # Then
+    assert resultat == "nan darou"
