@@ -109,3 +109,63 @@ def test_lorsque_n_en_debut_de_mot_alors_non_modifie():
     resultat = post_traiter(texte)
     # Then
     assert resultat == "nan darou"
+
+
+def test_lorsque_ra_isoles_separes_par_ponctuation_alors_la_isoles():
+    """Lorsque des ra isolés sont séparés par de la ponctuation, alors ils restent séparés après conversion."""
+    # Given
+    texte = "ra! ra! ra!"  # ponctuation préservée au moment de la correction
+    # When
+    resultat = post_traiter(texte)
+    # Then
+    assert resultat == "la la la"
+
+
+def test_lorsque_ra_repetes_attaches_alors_remplaces_par_la():
+    """Lorsqu'un mot composé uniquement de ra répétés est présent, alors il est remplacé par la."""
+    # Given
+    texte = "rarara"
+    # When
+    resultat = post_traiter(texte)
+    # Then
+    assert resultat == "lalala"
+
+
+def test_lorsque_ra_dans_vrai_mot_alors_non_modifie():
+    """Lorsque ra fait partie d'un vrai mot, alors il n'est pas modifié."""
+    # Given
+    texte = "sakura"
+    # When
+    resultat = post_traiter(texte)
+    # Then
+    assert resultat == "sakura"
+
+
+def test_lorsque_ra_majuscule_alors_non_modifie():
+    """Lorsque RA est en majuscules, alors il n'est pas modifié."""
+    # Given
+    texte = "RARARA"
+    # When
+    resultat = post_traiter(texte)
+    # Then
+    assert resultat == "RARARA"
+
+
+def test_lorsque_ra_titre_isole_alors_remplace_par_la():
+    """Lorsque Ra en titre (artefact cutlet) est isolé, alors il est remplacé par la."""
+    # Given
+    texte = "Ra!"  # cutlet capitalise le premier token après ponctuation
+    # When
+    resultat = post_traiter(texte)
+    # Then
+    assert resultat == "la"
+
+
+def test_lorsque_groupes_ra_separes_par_espace_seul_alors_fusionnes():
+    """Lorsque des groupes ra sont séparés par un espace seul (artefact cutlet), alors ils sont fusionnés."""
+    # Given
+    texte = "rarara Rara"  # cutlet tokenise ラ×5 en rarara + Rara
+    # When
+    resultat = post_traiter(texte)
+    # Then
+    assert resultat == "lalalalala"

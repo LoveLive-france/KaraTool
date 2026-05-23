@@ -8,7 +8,7 @@
 ## Commentaires
 
 - Les commentaires sont à éviter : si un commentaire est nécessaire pour comprendre le code, c'est que le nommage n'est pas assez explicite.
-- Préférer renommer la variable ou la fonction plutôt qu'expliquer ce qu'elle fait.
+- Préférer extraire une fonction bien nommée plutôt qu'expliquer ce qu'elle fait avec un commentaire.
 - Exception tolérée : une contrainte non évidente, un contournement de bug externe, ou un comportement surprenant qui ne peut pas s'exprimer par le nommage seul. Dans ce cas, le commenter précédé de `@devnote`.
 
 ## Tests
