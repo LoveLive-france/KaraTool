@@ -3,6 +3,7 @@ import customtkinter as ctk
 from tkinter import filedialog
 from core.encoding_manager import EncodingManager
 
+
 class TabEncodeur(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -15,9 +16,7 @@ class TabEncodeur(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
 
         self.btn_input = ctk.CTkButton(
-            self,
-            text="Sélectionner vidéo",
-            command=self._on_choose_file
+            self, text="Sélectionner vidéo", command=self._on_choose_file
         )
         self.btn_input.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="ew")
 
@@ -25,15 +24,14 @@ class TabEncodeur(ctk.CTkFrame):
         self.label_input.grid(row=1, column=0, pady=(0, 15))
 
         self.btn_output = ctk.CTkButton(
-            self,
-            text="Dossier de sortie",
-            command=self._on_choose_folder
+            self, text="Dossier de sortie", command=self._on_choose_folder
         )
         self.btn_output.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
 
-        self.label_output = ctk.CTkLabel(self, text="Aucun dossier sélectionné (par défaut celui du fichier)")
+        self.label_output = ctk.CTkLabel(
+            self, text="Aucun dossier sélectionné (par défaut celui du fichier)"
+        )
         self.label_output.grid(row=3, column=0, pady=(0, 15))
-
 
         self.video_bitrate = ctk.IntVar(value=4000)
 
@@ -41,10 +39,9 @@ class TabEncodeur(ctk.CTkFrame):
         bitrate_frame.grid(row=4, column=0, padx=20, pady=10, sticky="ew")
         bitrate_frame.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(
-            bitrate_frame,
-            text="Bitrate vidéo (kbps) (Par défaut 4000)"
-        ).grid(row=0, column=0, sticky="w", padx=10, pady=(10, 5))
+        ctk.CTkLabel(bitrate_frame, text="Bitrate vidéo (kbps) (Par défaut 4000)").grid(
+            row=0, column=0, sticky="w", padx=10, pady=(10, 5)
+        )
 
         self.bitrate_entry = ctk.CTkEntry(bitrate_frame)
         self.bitrate_entry.insert(0, "4000")
@@ -58,18 +55,8 @@ class TabEncodeur(ctk.CTkFrame):
 
         self.bitrate_entry.bind("<KeyRelease>", sync_bitrate)
 
-        self.btn_encode = ctk.CTkButton(
-            self,
-            text="Encoder",
-            command=self._on_encoding
-        )
-        self.btn_encode.grid(
-            row=5,
-            column=0,
-            padx=20,
-            pady=(30, 20),
-            sticky="ew"
-        )
+        self.btn_encode = ctk.CTkButton(self, text="Encoder", command=self._on_encoding)
+        self.btn_encode.grid(row=5, column=0, padx=20, pady=(30, 20), sticky="ew")
 
         self.status_label = ctk.CTkLabel(self, text="En attente...")
         self.status_label.grid(row=6, column=0, pady=(0, 20))

@@ -4,26 +4,40 @@ import threading
 import subprocess
 import json
 
+
 def get_ffmpeg_path():
     if getattr(sys, "frozen", False):
         return sys._MEIPASS
     return os.getcwd()
 
-def encode_video(input_file, output_file, video_bitrate=4000, audio_bitrate=256, progress_callback=None):
+
+def encode_video(
+    input_file,
+    output_file,
+    video_bitrate=4000,
+    audio_bitrate=256,
+    progress_callback=None,
+):
     audio_copy = has_opus_audio(input_file)
 
     cmd = [
         "ffmpeg",
         "-y",
-        "-i", input_file,
-        "-c:v", "libx265",
-        "-preset", "fast",
-        "-b:v", f"{video_bitrate}k",
-
+        "-i",
+        input_file,
+        "-c:v",
+        "libx265",
+        "-preset",
+        "fast",
+        "-b:v",
+        f"{video_bitrate}k",
         # optionnel mais important pour stabilité bitrate
-        "-maxrate", f"{video_bitrate * 2}k",
-        "-bufsize", f"{video_bitrate * 4}k",
-        "-movflags", "+faststart"
+        "-maxrate",
+        f"{video_bitrate * 2}k",
+        "-bufsize",
+        f"{video_bitrate * 4}k",
+        "-movflags",
+        "+faststart",
     ]
     if audio_copy:
         cmd += ["-c:a", "copy"]
@@ -33,11 +47,7 @@ def encode_video(input_file, output_file, video_bitrate=4000, audio_bitrate=256,
     cmd.append(output_file)
 
     process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        bufsize=1
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1
     )
 
     while True:
@@ -51,21 +61,28 @@ def encode_video(input_file, output_file, video_bitrate=4000, audio_bitrate=256,
     process.wait()
     return process.returncode
 
+
 def has_opus_audio(file):
     cmd = [
-        "ffprobe", "-v", "error",
-        "-select_streams", "a:0",
-        "-show_entries", "stream=codec_name",
-        "-of", "json",
-        file
+        "ffprobe",
+        "-v",
+        "error",
+        "-select_streams",
+        "a:0",
+        "-show_entries",
+        "stream=codec_name",
+        "-of",
+        "json",
+        file,
     ]
     result = subprocess.run(cmd, capture_output=True, text=True)
-    
+
     try:
         data = json.loads(result.stdout)
         return data["streams"][0]["codec_name"] == "opus"
     except Exception:
         return False
+
 
 class EncodingManager:
     def __init__(self, on_update):
@@ -82,12 +99,9 @@ class EncodingManager:
 
     def add(self, input_file):
         item_id = len(self.queue)
-        self.queue.append({
-            "id": item_id,
-            "input": input_file
-        })
+        self.queue.append({"id": item_id, "input": input_file})
         return item_id
-    
+
     def start(self):
         threading.Thread(target=self._run, daemon=True).start()
 
@@ -101,10 +115,7 @@ class EncodingManager:
             self.on_update(item_id, "⏳ Démarrage", i / total)
 
             base = os.path.splitext(os.path.basename(input_file))[0]
-            output_file = os.path.join(
-                self.output_folder,
-                f"{base}_x265.mp4"
-            )
+            output_file = os.path.join(self.output_folder, f"{base}_x265.mp4")
 
             def progress(line):
                 # ultra simple (tu peux améliorer après)

@@ -22,6 +22,7 @@ def _romaniser_ligne(ligne: str) -> str:
     ligne = remplacer_emprunts_katakana(ligne)
 
     segments_latins_proteges = {}
+
     def _mettre_en_placeholder_latin_majuscule(m):
         idx = len(segments_latins_proteges)
         cle_placeholder = f"__L{idx}__"
