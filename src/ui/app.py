@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from ui.tabs.tab_telechargeur import TabTelechargeur
 from ui.tabs.tab_texte_japonais import TabTexteJaponais
+from ui.tabs.tab_encodage import TabEncodeur
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -22,3 +23,4 @@ class App(ctk.CTk):
 
         TabTelechargeur(onglets.add("Téléchargeur")).pack(fill="both", expand=True)
         TabTexteJaponais(onglets.add("Formattage Kara")).pack(fill="both", expand=True)
+        TabEncodeur(onglets.add("Réencodage Vidéo")).pack(fill="both", expand=True)
