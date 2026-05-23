@@ -2,5 +2,7 @@ customtkinter
 yt-dlp
 pyinstaller
 pytest
+pre-commit
+ruff
 cutlet
 fugashi[unidic-lite]
