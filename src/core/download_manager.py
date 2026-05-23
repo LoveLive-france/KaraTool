@@ -24,21 +24,27 @@ def build_ydl_opts(url, fmt, download_folder, cookies_file=None, hook=None):
         opts["cookiefile"] = cookies_file
 
     if fmt == "Vidéo":
-        opts.update({
-            "format": "bestvideo+bestaudio/best",
-            "merge_output_format": "mp4",
-            "ffmpeg_location": get_ffmpeg_path(),
-        })
+        opts.update(
+            {
+                "format": "bestvideo+bestaudio/best",
+                "merge_output_format": "mp4",
+                "ffmpeg_location": get_ffmpeg_path(),
+            }
+        )
     else:
-        opts.update({
-            "format": "bestaudio",
-            "postprocessors": [{
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "0",
-            }],
-            "ffmpeg_location": get_ffmpeg_path(),
-        })
+        opts.update(
+            {
+                "format": "bestaudio",
+                "postprocessors": [
+                    {
+                        "key": "FFmpegExtractAudio",
+                        "preferredcodec": "mp3",
+                        "preferredquality": "0",
+                    }
+                ],
+                "ffmpeg_location": get_ffmpeg_path(),
+            }
+        )
 
     return opts
 
@@ -80,12 +86,16 @@ class DownloadManager:
             def hook(data, iid=item_id):
                 if data["status"] == "downloading":
                     downloaded = data.get("downloaded_bytes", 0)
-                    total_bytes = data.get("total_bytes") or data.get("total_bytes_estimate") or 1
+                    total_bytes = (
+                        data.get("total_bytes") or data.get("total_bytes_estimate") or 1
+                    )
                     self._on_update(iid, "⬇️ Téléchargement", downloaded / total_bytes)
                 elif data["status"] == "finished":
                     self._on_update(iid, "🔄 Conversion...", 1)
 
-            opts = build_ydl_opts(url, fmt, self.download_folder, self.cookies_file, hook)
+            opts = build_ydl_opts(
+                url, fmt, self.download_folder, self.cookies_file, hook
+            )
 
             try:
                 with YoutubeDL(opts) as ydl:

@@ -1,0 +1,8 @@
+[pr_reviewer]
+require_score_review = false
+require_tests_review = false
+require_security_review = true
+num_code_suggestions = 4
+
+[pr_description]
+publish_labels = false

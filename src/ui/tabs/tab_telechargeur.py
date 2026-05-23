@@ -22,9 +22,9 @@ class TabTelechargeur(ctk.CTkFrame):
     def _build_header(self):
         header = ctk.CTkFrame(self, height=70)
         header.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
-        ctk.CTkLabel(header, text="YouTube Downloader", font=("Arial", 24, "bold")).grid(
-            row=0, column=0, padx=10, pady=10, sticky="w"
-        )
+        ctk.CTkLabel(
+            header, text="YouTube Downloader", font=("Arial", 24, "bold")
+        ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
     def _build_barre_saisie(self):
         frame = ctk.CTkFrame(self)
@@ -35,9 +35,9 @@ class TabTelechargeur(ctk.CTkFrame):
         self._entree_url.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
         self._format_selectionne = ctk.StringVar(value="Vidéo")
-        ctk.CTkOptionMenu(frame, values=["Vidéo", "Audio"], variable=self._format_selectionne).grid(
-            row=0, column=1, padx=10
-        )
+        ctk.CTkOptionMenu(
+            frame, values=["Vidéo", "Audio"], variable=self._format_selectionne
+        ).grid(row=0, column=1, padx=10)
 
     def _build_liste(self):
         self._frame_liste = ctk.CTkScrollableFrame(self)
@@ -47,11 +47,21 @@ class TabTelechargeur(ctk.CTkFrame):
         pied = ctk.CTkFrame(self)
         pied.grid(row=3, column=0, sticky="ew", padx=10, pady=10)
 
-        ctk.CTkButton(pied, text="Ajouter", command=self._on_ajouter_lien).pack(side="left", padx=10)
-        ctk.CTkButton(pied, text="Dossier", command=self._on_choisir_dossier).pack(side="left", padx=10)
-        ctk.CTkButton(pied, text="Cookies", command=self._on_choisir_cookies).pack(side="left", padx=10)
-        ctk.CTkButton(pied, text="Vider cookies", command=self._on_vider_cookies).pack(side="left", padx=10)
-        ctk.CTkButton(pied, text="Télécharger tout", command=self._on_lancer_telechargement).pack(side="right", padx=10)
+        ctk.CTkButton(pied, text="Ajouter", command=self._on_ajouter_lien).pack(
+            side="left", padx=10
+        )
+        ctk.CTkButton(pied, text="Dossier", command=self._on_choisir_dossier).pack(
+            side="left", padx=10
+        )
+        ctk.CTkButton(pied, text="Cookies", command=self._on_choisir_cookies).pack(
+            side="left", padx=10
+        )
+        ctk.CTkButton(pied, text="Vider cookies", command=self._on_vider_cookies).pack(
+            side="left", padx=10
+        )
+        ctk.CTkButton(
+            pied, text="Télécharger tout", command=self._on_lancer_telechargement
+        ).pack(side="right", padx=10)
 
         self._label_cookies = ctk.CTkLabel(pied, text="", font=("Arial", 14, "bold"))
         self._label_cookies.pack(side="right", padx=10)
@@ -71,7 +81,10 @@ class TabTelechargeur(ctk.CTkFrame):
         barre_progression.pack(side="right", padx=10)
         barre_progression.set(0)
 
-        self._cards[item_id] = {"statut": label_statut, "progression": barre_progression}
+        self._cards[item_id] = {
+            "statut": label_statut,
+            "progression": barre_progression,
+        }
 
     def _mettre_a_jour_carte(self, item_id, statut, progression):
         carte = self._cards.get(item_id)
@@ -121,4 +134,6 @@ class TabTelechargeur(ctk.CTkFrame):
         if self._manager.cookies_file:
             self._label_cookies.configure(text="● Cookies: chargés", text_color="green")
         else:
-            self._label_cookies.configure(text="● Cookies: non chargés", text_color="red")
+            self._label_cookies.configure(
+                text="● Cookies: non chargés", text_color="red"
+            )
