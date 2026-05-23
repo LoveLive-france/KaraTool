@@ -1,21 +1,53 @@
 # KaraTool
-Un petit outil pour aider à la création de karaokés
+Un petit outil pour aider à la création de karaokés japonais : téléchargement audio depuis YouTube et romanisation du texte japonais avec export `.ass` pour Aegisub.
 
-## Prérequis
+## Télécharger l'application
 
-### _Dépendances Python_
-Installer les bibliothèques nécessaires :
+Les exécutables Windows sont disponibles dans l'onglet [Releases](../../releases) du dépôt. Télécharger le fichier `KaraTool_vX.Y.Z.exe` et le lancer directement, sans installation.
+
+## Développement
+
+### Prérequis
+
 ```
 pip install -r requirements.txt
 ```
 
-### _FFmpeg_
-Télécharger `ffmpeg.exe` et le placer dans le même dossier que le `.py`.
+### Lancer l'application
 
-## Création de l'exécutable
+```
+python src/main.py
+```
 
-### _Prérequis_
-Bien avoir le ffmpeg.exe au même endroit que le .py : c'est important car il sera embarqué directement dans l'app.
+### Tests et lint
 
-### _Commande de création_
-```pyinstaller --clean --onefile --windowed --add-binary "tools/ffmpeg.exe;." src/main.py```
+```
+python -m pytest tests/ -q
+ruff check .
+ruff format --check .
+```
+
+Les hooks pre-commit exécutent automatiquement le lint et les tests avant chaque commit :
+
+```
+pre-commit install
+```
+
+## Générer l'exécutable
+
+### En local (Docker)
+
+Nécessite Docker. Génère `dist/KaraTool.exe` :
+
+```
+docker compose up
+```
+
+### Via GitHub Actions
+
+Pousser un tag `vX.Y.Z` pour déclencher le build et la publication automatique d'une release :
+
+```
+git tag v1.0.0
+git push origin v1.0.0
+```
