@@ -5,4 +5,7 @@ pyinstaller --noconsole --onefile --name "$NAME" \
   --add-data "src/template.ass;." \
   --collect-all unidic_lite \
   --collect-all fugashi \
+  --collect-all cutlet \
+  --collect-all customtkinter \
+  --collect-all yt_dlp \
   src/main.py
