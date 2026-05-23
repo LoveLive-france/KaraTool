@@ -8,6 +8,7 @@ from core.ass_exporter import (
     lire_styles_disponibles,
     extraire_styles_depuis_ass,
     fusionner_styles,
+    _generer_ligne_legende,
 )
 
 
@@ -198,6 +199,59 @@ def test_lorsque_aucun_nouveau_style_alors_catalogue_inchange():
     )
     # Then
     assert resultat == existants
+
+
+def test_lorsque_styles_selectionnes_alors_ligne_legende_generee(tmp_path):
+    """Lorsque des styles sont sélectionnés, alors une ligne légende est présente dans le .ass."""
+    # Given
+    chemin = tmp_path / "sortie.ass"
+    # When
+    exporter_ass(
+        str(chemin), ["test"], styles_a_inclure=["Sample KM [Up]", "Sample KM [Choir]"]
+    )
+    # Then
+    contenu = chemin.read_text(encoding="utf-8")
+    assert ",legend," in contenu
+    assert "{\\rSample KM [Up]}Sample KM [Up]" in contenu
+    assert "{\\rSample KM [Choir]}Sample KM [Choir]" in contenu
+
+
+def test_lorsque_aucun_style_selectionne_alors_pas_de_legende(tmp_path):
+    """Lorsqu'aucun style n'est sélectionné, alors aucune ligne légende n'est générée."""
+    # Given
+    chemin = tmp_path / "sortie.ass"
+    # When
+    exporter_ass(str(chemin), ["test"], styles_a_inclure=[])
+    # Then
+    contenu = chemin.read_text(encoding="utf-8")
+    assert ",legend," not in contenu
+
+
+def test_lorsque_un_seul_style_selectionne_alors_pas_de_legende(tmp_path):
+    """Lorsqu'un seul style est sélectionné, alors aucune ligne légende n'est générée."""
+    # Given
+    chemin = tmp_path / "sortie.ass"
+    # When
+    exporter_ass(str(chemin), ["test"], styles_a_inclure=["Sample KM [Up]"])
+    # Then
+    contenu = chemin.read_text(encoding="utf-8")
+    assert ",legend," not in contenu
+
+
+def test_lorsque_couleur_primaire_blanche_alors_couleur_secondaire_dans_legende():
+    """Lorsque la couleur primaire d'un style est blanche, alors la couleur secondaire est injectée dans la légende."""
+    # Given
+    styles = [
+        {
+            "nom": "Style Blanc",
+            "definition": "Style: Style Blanc,Arial,24,&H00FFFFFF,&H005050E2,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,2,2,2,10,10,10,1",
+        }
+    ]
+    # When
+    resultat = _generer_ligne_legende(styles)
+    # Then
+    assert "\\1c&H5050E2&" in resultat
+    assert "Style Blanc" in resultat
 
 
 def test_lorsque_aucune_selection_alors_sample_km_up_par_defaut(tmp_path):

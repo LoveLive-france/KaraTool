@@ -15,7 +15,6 @@ _CHEMIN_STYLES_UTILISATEUR = (
     Path(os.getenv("APPDATA", Path.home())) / "KaraTool" / "styles_disponibles.json"
 )
 
-_PREFIXE_DIALOGUE = "Dialogue: 0,0:00:00.00,0:00:00.00,Sample KM [Up],,0,0,0,,"
 _NOM_STYLE_DEFAUT = "Sample KM [Up]"
 
 
@@ -56,6 +55,37 @@ def sauvegarder_styles(styles: list[dict]) -> None:
     )
 
 
+def _couleur_override_legende(definition: str) -> str | None:
+    champs = definition.split(",")
+    if len(champs) < 5:
+        return None
+    primaire = champs[3].strip()
+    if primaire.upper().endswith("FFFFFF"):
+        secondaire = champs[4].strip()
+        couleur_hex = (
+            secondaire[4:] if secondaire.upper().startswith("&H") else secondaire
+        )
+        return f"&H{couleur_hex}&"
+    return None
+
+
+def _entree_legende(style: dict) -> str:
+    nom = style["nom"]
+    override = _couleur_override_legende(style["definition"])
+    if override:
+        return f"{{\\r{nom}}}{{\\1c{override}}}{nom}"
+    return f"{{\\r{nom}}}{nom}"
+
+
+def _generer_ligne_legende(styles: list[dict]) -> str:
+    style_base = styles[0]["nom"]
+    entrees = " {\\2cHFFFFFF}| ".join(_entree_legende(s) for s in styles)
+    return (
+        f"Dialogue: 0,0:00:00.00,0:00:10.00,{style_base},,0,0,0,legend,"
+        f"{{\\an2\\k1000}}{{\\k0}}{entrees}"
+    )
+
+
 def _injecter_styles(contenu: str, definitions: list[str]) -> str:
     lignes = contenu.splitlines(keepends=True)
     resultat = []
@@ -82,12 +112,25 @@ def exporter_ass(
     )
     par_nom = {s["nom"]: s["definition"] for s in lire_styles_disponibles()}
     noms_effectifs = styles_a_inclure if styles_a_inclure else [_NOM_STYLE_DEFAUT]
-    definitions = [par_nom[nom] for nom in noms_effectifs if nom in par_nom] or [
-        par_nom[_NOM_STYLE_DEFAUT]
-    ]
-    header = _injecter_styles(contenu_template, definitions)
-    dialogues = "\n".join(
-        f"{_PREFIXE_DIALOGUE}{ligne}" for ligne in lignes if ligne.strip()
+    styles_effectifs = [
+        {"nom": n, "definition": par_nom[n]} for n in noms_effectifs if n in par_nom
+    ] or [{"nom": _NOM_STYLE_DEFAUT, "definition": par_nom[_NOM_STYLE_DEFAUT]}]
+    style_dialogue = styles_effectifs[0]["nom"]
+    contenu_template = contenu_template.replace(
+        f",{_NOM_STYLE_DEFAUT},,", f",{style_dialogue},,", 1
     )
+    definitions = [s["definition"] for s in styles_effectifs]
+    header = _injecter_styles(contenu_template, definitions)
+    legende = (
+        _generer_ligne_legende(styles_effectifs)
+        if styles_a_inclure and len(styles_a_inclure) > 1
+        else ""
+    )
+    dialogues = "\n".join(
+        f"Dialogue: 0,0:00:00.00,0:00:00.00,{style_dialogue},,0,0,0,,{ligne}"
+        for ligne in lignes
+        if ligne.strip()
+    )
+    contenu_events = "\n".join(filter(None, [legende, dialogues]))
     with open(chemin_destination, "w", encoding="utf-8") as fichier:
-        fichier.write(header + dialogues + ("\n" if dialogues else ""))
+        fichier.write(header + contenu_events + ("\n" if contenu_events else ""))
