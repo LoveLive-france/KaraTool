@@ -8,5 +8,5 @@ services:
     command: >
       -c "
       pip install -r requirements.txt &&
-      pyinstaller --noconsole --onefile --add-data 'tools/ffmpeg.exe;.' src/main.py
+      bash compile.sh
       "

@@ -65,3 +65,33 @@ def test_lorsque_texte_sans_katakana_alors_inchange():
     resultat = remplacer_emprunts_katakana(texte)
     # Then
     assert resultat == "toki ga tomareba"
+
+
+def test_lorsque_katakana_adjacent_a_lettre_latine_alors_espace_insere():
+    """Lorsqu'un emprunt katakana est adjacent à une lettre latine, alors un espace est inséré entre les deux."""
+    # Given
+    texte = "イニシャルM"
+    # When
+    resultat = remplacer_emprunts_katakana(texte)
+    # Then
+    assert resultat == "initial M"
+
+
+def test_lorsque_katakana_adjacent_a_hiragana_apres_alors_espace_insere():
+    """Lorsqu'un emprunt katakana est suivi de hiragana, alors un espace est inséré après le remplacement."""
+    # Given
+    texte = "バグらす"
+    # When
+    resultat = remplacer_emprunts_katakana(texte)
+    # Then
+    assert resultat == "bug らす"
+
+
+def test_lorsque_katakana_encadre_par_hiragana_alors_espaces_inseres():
+    """Lorsqu'un emprunt katakana est encadré par des hiragana, alors un espace est inséré de chaque côté."""
+    # Given
+    texte = "もバグも"
+    # When
+    resultat = remplacer_emprunts_katakana(texte)
+    # Then
+    assert resultat == "も bug も"

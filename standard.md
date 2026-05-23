@@ -53,3 +53,13 @@ def test_lorsque_xxx_alors_yyy():
     # Then
     assert ...
 ```
+
+### TDD
+
+Le développement suit le cycle **Red → Green → Refactor** :
+
+1. **Red** — écrire un test qui échoue avant d'écrire le code de production.
+2. **Green** — écrire le minimum de code pour faire passer le test.
+3. **Refactor** — améliorer le code sans changer son comportement (les tests doivent toujours passer).
+
+Toute nouvelle fonctionnalité ou correction de bug commence par un test.

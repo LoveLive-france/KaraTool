@@ -9,7 +9,15 @@ _katsu_etranger = cutlet.Cutlet(use_foreign_spelling=True)
 
 
 def remplacer_emprunts_katakana(texte: str) -> str:
-    return _KATAKANA.sub(_resoudre_sequence, texte)
+    def _resoudre_avec_espaces(match: re.Match) -> str:
+        remplacement = _resoudre_sequence(match)
+        if remplacement == match.group(0):
+            return remplacement
+        debut = " " if match.start() > 0 and texte[match.start() - 1] != " " else ""
+        fin = " " if match.end() < len(texte) and texte[match.end()] != " " else ""
+        return debut + remplacement + fin
+
+    return _KATAKANA.sub(_resoudre_avec_espaces, texte)
 
 
 def _resoudre_sequence(match: re.Match) -> str:

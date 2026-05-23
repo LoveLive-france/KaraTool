@@ -1,0 +1,11 @@
+[pr_reviewer]
+require_score_review = false
+require_tests_review = false
+require_security_review = true
+num_code_suggestions = 4
+inline_code_comments = true
+focus_only_on_problems = true
+extra_instructions = "Réponds en français. Sois concis et direct."
+
+[pr_description]
+publish_labels = false
