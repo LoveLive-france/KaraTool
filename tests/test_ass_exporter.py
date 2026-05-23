@@ -3,7 +3,12 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from core.ass_exporter import exporter_ass
+from core.ass_exporter import (
+    exporter_ass,
+    lire_styles_disponibles,
+    extraire_styles_depuis_ass,
+    fusionner_styles,
+)
 
 
 def test_lorsque_une_ligne_alors_une_dialogue_creee(tmp_path):
@@ -128,3 +133,81 @@ def test_lorsque_pas_de_titre_alors_title_par_defaut(tmp_path):
     # Then
     contenu = chemin.read_text(encoding="utf-8")
     assert "Title: New subtitles" in contenu
+
+
+def test_lorsque_lire_styles_disponibles_alors_styles_de_base_presents():
+    """Lorsqu'on lit les styles disponibles, alors les styles de base sont présents."""
+    # Given / When
+    styles = lire_styles_disponibles()
+    # Then
+    noms = [s["nom"] for s in styles]
+    assert "Sample KM [Up]" in noms
+    assert "Sample KM [Choir]" in noms
+
+
+def test_lorsque_styles_selectionnes_alors_seuls_ces_styles_injectes(tmp_path):
+    """Lorsque des styles sont sélectionnés, alors seuls ces styles apparaissent dans [V4+ Styles]."""
+    # Given
+    chemin = tmp_path / "sortie.ass"
+    # When
+    exporter_ass(str(chemin), ["test"], styles_a_inclure=["Sample KM [Up]"])
+    # Then
+    contenu = chemin.read_text(encoding="utf-8")
+    assert "Style: Sample KM [Up]" in contenu
+    assert "Style: Sample KM [Choir]" not in contenu
+
+
+def test_lorsque_ass_avec_styles_alors_styles_extraits(tmp_path):
+    """Lorsqu'un fichier .ass contient des styles, alors ils sont extraits avec nom et définition."""
+    # Given
+    ass = tmp_path / "test.ass"
+    ass.write_text(
+        "[V4+ Styles]\nFormat: Name, Fontname\nStyle: MonStyle,Arial,24\n",
+        encoding="utf-8",
+    )
+    # When
+    styles = extraire_styles_depuis_ass(str(ass))
+    # Then
+    assert len(styles) == 1
+    assert styles[0]["nom"] == "MonStyle"
+    assert styles[0]["definition"] == "Style: MonStyle,Arial,24"
+
+
+def test_lorsque_style_deja_present_alors_non_duplique():
+    """Lorsqu'un style existe déjà dans le catalogue, alors il n'est pas ajouté en double."""
+    # Given
+    existants = [{"nom": "A", "definition": "Style: A,Arial"}]
+    nouveaux = [
+        {"nom": "A", "definition": "Style: A,Arial"},
+        {"nom": "B", "definition": "Style: B,Arial"},
+    ]
+    # When
+    resultat = fusionner_styles(existants, nouveaux)
+    # Then
+    assert len(resultat) == 2
+    assert sum(1 for s in resultat if s["nom"] == "A") == 1
+
+
+def test_lorsque_aucun_nouveau_style_alors_catalogue_inchange():
+    """Lorsque tous les nouveaux styles sont déjà présents, alors le catalogue ne change pas."""
+    # Given
+    existants = [{"nom": "A", "definition": "Style: A,Arial"}]
+    # When
+    resultat = fusionner_styles(
+        existants, [{"nom": "A", "definition": "Style: A,Arial"}]
+    )
+    # Then
+    assert resultat == existants
+
+
+def test_lorsque_aucune_selection_alors_sample_km_up_par_defaut(tmp_path):
+    """Lorsqu'aucun style n'est sélectionné, alors Sample KM [Up] est utilisé par défaut."""
+    # Given
+    chemin = tmp_path / "sortie.ass"
+    # When
+    exporter_ass(str(chemin), ["test"], styles_a_inclure=[])
+    # Then
+    contenu = chemin.read_text(encoding="utf-8")
+    assert "Style: Sample KM [Up]" in contenu
+    assert "Style: Sample KM [Choir]" not in contenu
+    assert "Style: Sample KM [Down]" not in contenu
