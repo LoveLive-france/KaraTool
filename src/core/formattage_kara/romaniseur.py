@@ -80,8 +80,7 @@ def _romaniser_ligne(ligne: str, conserver_casse_latine: bool = False) -> str:
 
 
 def _separer_emprunts_du_romaji_adjacent(texte: str) -> str:
-    # @devnote cutlet supprime les espaces entre tokens japonais et non-japonais adjacents —
-    # on restaure les espaces aux frontières majuscule / minuscule dans les deux sens
+    # @devnote cutlet supprime les espaces entre tokens japonais et non-japonais adjacents
     texte = re.sub(r"([A-Z]{2,})([a-z])", r"\1 \2", texte)
     texte = re.sub(r"([a-z])([A-Z])", r"\1 \2", texte)
     return texte
