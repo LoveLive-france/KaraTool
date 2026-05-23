@@ -25,7 +25,7 @@ jobs:
 
       - name: Build executable
         shell: bash
-        run: ./build.sh "KaraTool_${{ github.ref_name }}"
+        run: ./compile.sh "KaraTool_${{ github.ref_name }}"
 
       - name: Smoke test
         shell: pwsh
