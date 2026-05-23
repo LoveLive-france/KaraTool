@@ -26,12 +26,26 @@ Exemples :
 - `test_lorsque_fichier_existant_alors_contenu_remplace`
 - `test_lorsque_contenu_vide_alors_fichier_cree_vide`
 
+### Docstring des tests
+
+Chaque test porte une docstring qui suit la même convention `lorsque / alors` que son nom :
+
+```python
+def test_lorsque_xxx_alors_yyy():
+    """Lorsque <condition>, alors <résultat attendu>."""
+```
+
+Exemples :
+- `"""Lorsque le texte est vide, alors une chaîne vide est retournée."""`
+- `"""Lorsque du texte japonais est exporté, alors l'encodage UTF-8 est préservé."""`
+
 ### Structure des tests
 
 Chaque test est structuré en trois blocs commentés :
 
 ```python
-def test_lorsque_xxx_alors_yyy(tmp_path):
+def test_lorsque_xxx_alors_yyy():
+    """Lorsque <condition>, alors <résultat attendu>."""
     # Given
     ...
     # When
