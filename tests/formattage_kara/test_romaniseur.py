@@ -72,7 +72,7 @@ def test_lorsque_texte_multiligne_alors_retours_a_la_ligne_preserves():
 
 
 def test_lorsque_texte_latin_dans_input_alors_majuscules():
-    """Lorsque du texte latin est présent dans l'input, alors il est retourné en majuscules."""
+    """Lorsque du texte latin commun est présent dans l'input, alors il est retourné en majuscules."""
     # Given
     phrase = "東京へ行く I love you"
     # When
@@ -81,6 +81,61 @@ def test_lorsque_texte_latin_dans_input_alors_majuscules():
     assert "I" in resultat
     assert "LOVE" in resultat
     assert "YOU" in resultat
+
+
+def test_lorsque_nom_propre_latin_dans_input_alors_title_case():
+    """Lorsqu'un nom propre latin est présent dans l'input, alors il est retourné en title case."""
+    # Given
+    phrase = "watashi no namae wa Hana"
+    # When
+    resultat = romaniser_texte(phrase)
+    # Then
+    assert "Hana" in resultat
+
+
+def test_lorsque_parenthese_latine_et_toggle_actif_alors_casse_preservee():
+    """Lorsqu'une parenthèse contient du latin dans une ligne japonaise et le toggle est actif, alors la casse d'origine est préservée."""
+    # Given
+    phrase = "気持ちが (Let's do it now!!)"
+    # When
+    resultat = romaniser_texte(phrase, conserver_casse_latine=True)
+    # Then
+    lignes = resultat.split("\n")
+    assert lignes[0] == "kimochi ga"
+    assert lignes[1] == "Let's do it now"
+
+
+def test_lorsque_parenthese_latine_et_toggle_inactif_alors_mots_en_majuscules():
+    """Lorsqu'une parenthèse contient du latin et le toggle est inactif, alors tous les mots sont en majuscules."""
+    # Given
+    phrase = "気持ちが (Let's do it now!!)"
+    # When
+    resultat = romaniser_texte(phrase, conserver_casse_latine=False)
+    # Then
+    lignes = resultat.split("\n")
+    assert lignes[0] == "kimochi ga"
+    assert lignes[1] == "LET'S DO IT NOW"
+
+
+def test_lorsque_plusieurs_parentheses_latines_et_toggle_actif_alors_toutes_preservees():
+    """Lorsque plusieurs parenthèses latines sont présentes et le toggle est actif, alors toutes conservent leur casse."""
+    # Given
+    phrase = "気持ちが (Let's do it now!!)\nあがってく！ (Up to you!!)"
+    # When
+    resultat = romaniser_texte(phrase, conserver_casse_latine=True)
+    # Then
+    assert "Let's do it now" in resultat
+    assert "Up to you" in resultat
+
+
+def test_lorsque_latin_all_caps_dans_input_alors_all_caps_conserve():
+    """Lorsque du latin en majuscules est présent dans l'input, alors les majuscules sont conservées."""
+    # Given
+    phrase = "I LOVE YOU"
+    # When
+    resultat = romaniser_texte(phrase)
+    # Then
+    assert resultat == "I LOVE YOU"
 
 
 def test_lorsque_katakana_emprunt_dans_phrase_alors_majuscules():
@@ -152,3 +207,46 @@ def test_lorsque_texte_avec_macrons_alors_macrons_supprimes():
     # Then
     assert "ō" not in resultat
     assert "ū" not in resultat
+
+
+def test_lorsque_ligne_latine_et_toggle_actif_alors_casse_preservee():
+    """Lorsqu'une ligne est entièrement latine et le toggle actif, alors la casse d'origine est conservée."""
+    # Given
+    phrase = "I love you"
+    # When
+    resultat = romaniser_texte(phrase, conserver_casse_latine=True)
+    # Then
+    assert resultat == "I love you"
+
+
+def test_lorsque_ligne_latine_et_toggle_inactif_alors_full_caps():
+    """Lorsqu'une ligne est entièrement latine et le toggle inactif, alors elle est en majuscules."""
+    # Given
+    phrase = "I love you"
+    # When
+    resultat = romaniser_texte(phrase, conserver_casse_latine=False)
+    # Then
+    assert resultat == "I LOVE YOU"
+
+
+def test_lorsque_ligne_mixte_et_toggle_actif_alors_non_affectee():
+    """Lorsqu'une ligne contient du japonais et le toggle est actif, alors elle est romanisée normalement."""
+    # Given
+    phrase = "東京 is beautiful"
+    # When
+    resultat = romaniser_texte(phrase, conserver_casse_latine=True)
+    # Then
+    assert "Tokyo" in resultat
+    assert "IS BEAUTIFUL" in resultat
+
+
+def test_lorsque_texte_multiligne_et_toggle_actif_alors_seules_lignes_latines_preservees():
+    """Lorsque le texte est multiligne et le toggle actif, alors seules les lignes sans japonais conservent leur casse."""
+    # Given
+    phrase = "I love you\n東京へ行く"
+    # When
+    resultat = romaniser_texte(phrase, conserver_casse_latine=True)
+    # Then
+    lignes = resultat.split("\n")
+    assert lignes[0] == "I love you"
+    assert "Tokyo" in lignes[1]

@@ -23,7 +23,7 @@ Texte japonais
       │  Convertit hiragana / katakana / kanji → romaji
       ▼
 [4] Restauration du texte latin
-      │  Réinjecte le texte original en MAJUSCULES
+      │  Réinjecte le texte original : MAJUSCULES si mot commun, Title Case si nom propre
       ▼
 [5] Correction des particules
       │  Corrige la particule へ romanisée "e" → "he"
@@ -46,6 +46,16 @@ Romaji formaté
 Point d'entrée : `romaniser_texte(texte_japonais: str) → str`
 
 Traite le texte ligne par ligne en appelant les autres modules dans l'ordre du pipeline.
+
+**Casse du texte latin (`_casse_segment_latin`) :**
+
+| Segment original | Condition | Résultat |
+|-----------------|-----------|----------|
+| `Tokyo` | commence par maj, pas tout en maj | `Tokyo` (casse d'origine préservée) |
+| `McDonald` | commence par maj, pas tout en maj | `McDonald` (casse d'origine préservée) |
+| `love` | commence par minuscule | `LOVE` (full caps) |
+| `I` | lettre unique en maj | `I` (full caps) |
+| `LOVE` | tout en majuscules | `LOVE` (full caps conservé) |
 
 ---
 
