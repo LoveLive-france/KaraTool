@@ -7,6 +7,7 @@ from core.text_exporter import exporter_texte
 
 
 def test_lorsque_contenu_simple_alors_fichier_cree(tmp_path):
+    """Lorsqu'un contenu simple est exporté, alors le fichier est créé."""
     # Given
     chemin_fichier = tmp_path / "sortie.txt"
     contenu = "bonjour"
@@ -17,6 +18,7 @@ def test_lorsque_contenu_simple_alors_fichier_cree(tmp_path):
 
 
 def test_lorsque_texte_japonais_alors_encodage_utf8_preserve(tmp_path):
+    """Lorsque du texte japonais est exporté, alors l'encodage UTF-8 est préservé."""
     # Given
     chemin_fichier = tmp_path / "japonais.txt"
     contenu_japonais = "こんにちは世界"
@@ -27,6 +29,7 @@ def test_lorsque_texte_japonais_alors_encodage_utf8_preserve(tmp_path):
 
 
 def test_lorsque_fichier_existant_alors_contenu_remplace(tmp_path):
+    """Lorsqu'un fichier existant est ciblé, alors son contenu est remplacé."""
     # Given
     chemin_fichier = tmp_path / "existant.txt"
     chemin_fichier.write_text("ancien contenu", encoding="utf-8")
@@ -38,6 +41,7 @@ def test_lorsque_fichier_existant_alors_contenu_remplace(tmp_path):
 
 
 def test_lorsque_contenu_vide_alors_fichier_cree_vide(tmp_path):
+    """Lorsque le contenu est vide, alors le fichier est créé vide."""
     # Given
     chemin_fichier = tmp_path / "vide.txt"
     # When
