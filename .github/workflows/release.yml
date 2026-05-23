@@ -25,9 +25,11 @@ jobs:
 
       - name: Build executable
         run: >
-          pyinstaller --noconsole --onefile --name KaraTool
+          pyinstaller --noconsole --onefile --name "KaraTool_${{ github.ref_name }}"
           --add-data "tools/ffmpeg.exe;."
           --add-data "src/template.ass;."
+          --collect-data unidic_lite
+          --collect-all fugashi
           src/main.py
 
       - name: Create GitHub Release
@@ -35,4 +37,4 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
-          files: dist/KaraTool.exe
+          files: dist/KaraTool_${{ github.ref_name }}.exe
