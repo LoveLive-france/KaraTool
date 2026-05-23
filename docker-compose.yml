@@ -8,5 +8,5 @@ services:
     command: >
       -c "
       pip install -r requirements.txt &&
-      bash build.sh
+      bash compile.sh
       "
