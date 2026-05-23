@@ -1,0 +1,4 @@
+[
+  {"nom": "Sample KM [Up]",    "definition": "Style: Sample KM [Up],Arial,24,&H00008AFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,1.5,0,8,2,2,20,1"},
+  {"nom": "Sample KM [Choir]", "definition": "Style: Sample KM [Choir],Arial,24,&H005050E2,&H00FFFFFF,&H00000000,&H00000000,-1,-1,0,0,100,100,0,0,1,1.5,0,8,2,2,80,1"}
+]
