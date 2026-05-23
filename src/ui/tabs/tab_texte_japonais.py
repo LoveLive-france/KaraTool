@@ -24,7 +24,7 @@ class TabTexteJaponais(ctk.CTkFrame):
             row=1, column=0, sticky="nsew", padx=(10, 5), pady=5
         )
 
-        self._zone_romaji = ctk.CTkTextbox(self, font=("Arial", 16), state="disabled")
+        self._zone_romaji = ctk.CTkTextbox(self, font=("Arial", 16))
         self._zone_romaji.grid(row=1, column=1, sticky="nsew", padx=(5, 10), pady=5)
 
         self._toggle_conserver_casse = ctk.CTkSwitch(
@@ -46,10 +46,8 @@ class TabTexteJaponais(ctk.CTkFrame):
         romaji = romaniser_texte(
             contenu, conserver_casse_latine=self._toggle_conserver_casse.get()
         )
-        self._zone_romaji.configure(state="normal")
         self._zone_romaji.delete("1.0", "end")
         self._zone_romaji.insert("1.0", romaji)
-        self._zone_romaji.configure(state="disabled")
 
     def _on_telecharger_ass(self):
         romaji = self._zone_romaji.get("1.0", "end-1c")
