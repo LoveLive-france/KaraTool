@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from tkinter import filedialog
-from core.text_exporter import exporter_texte
+from core.ass_exporter import exporter_ass
 from core.formattage_kara.romaniseur import romaniser_texte
 
 
@@ -38,7 +38,7 @@ class TabTexteJaponais(ctk.CTkFrame):
             row=3, column=0, pady=(5, 10), padx=(10, 5), sticky="ew"
         )
         ctk.CTkButton(
-            self, text="Télécharger .txt", command=self._on_telecharger_texte
+            self, text="Télécharger .ass", command=self._on_telecharger_ass
         ).grid(row=3, column=1, pady=(5, 10), padx=(5, 10), sticky="ew")
 
     def _on_romaniser(self):
@@ -51,13 +51,13 @@ class TabTexteJaponais(ctk.CTkFrame):
         self._zone_romaji.insert("1.0", romaji)
         self._zone_romaji.configure(state="disabled")
 
-    def _on_telecharger_texte(self):
-        contenu = self._zone_texte_japonais.get("1.0", "end-1c")
-        nom_fichier = self._entree_nom_fichier.get().strip() or "texte"
+    def _on_telecharger_ass(self):
+        romaji = self._zone_romaji.get("1.0", "end-1c")
+        nom_fichier = self._entree_nom_fichier.get().strip() or "subtitles"
         chemin_destination = filedialog.asksaveasfilename(
-            defaultextension=".txt",
-            filetypes=[("Text", "*.txt")],
+            defaultextension=".ass",
+            filetypes=[("SubStation Alpha", "*.ass")],
             initialfile=nom_fichier,
         )
         if chemin_destination:
-            exporter_texte(chemin_destination, contenu)
+            exporter_ass(chemin_destination, romaji.splitlines(), titre=nom_fichier)
