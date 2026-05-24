@@ -1,5 +1,7 @@
 #!/bin/bash
 NAME=${1:-KaraTool}
+VERSION=${2:-dev}
+echo "__version__ = \"$VERSION\"" > src/version.py
 pyinstaller --noconsole --onefile --name "$NAME" \
   --add-data "tools/ffmpeg.exe;." \
   --add-data "src/template.ass;." \
