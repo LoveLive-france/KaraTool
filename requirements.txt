@@ -6,3 +6,4 @@ pre-commit
 ruff
 cutlet
 fugashi[unidic-lite]
+requests
