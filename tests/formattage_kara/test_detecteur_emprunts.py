@@ -95,3 +95,33 @@ def test_lorsque_katakana_encadre_par_hiragana_alors_espaces_inseres():
     resultat = remplacer_emprunts_katakana(texte)
     # Then
     assert resultat == "も bug も"
+
+
+def test_lorsque_katakana_lets_go_alors_lets_go_retourne():
+    """Lorsque レッツゴー est présent, alors let's go est retourné."""
+    # Given
+    texte = "レッツゴー"
+    # When
+    resultat = remplacer_emprunts_katakana(texte)
+    # Then
+    assert resultat == "let's go"
+
+
+def test_lorsque_katakana_dans_dictionnaire_alors_mot_anglais_retourne():
+    """Lorsque le katakana est dans le dictionnaire d'exceptions, alors le mot anglais en minuscules est retourné."""
+    # Given
+    texte = "イエス"
+    # When
+    resultat = remplacer_emprunts_katakana(texte)
+    # Then
+    assert resultat == "yes"
+
+
+def test_lorsque_katakana_dans_dictionnaire_dans_phrase_alors_mot_anglais_insere():
+    """Lorsque le katakana du dictionnaire est dans une phrase, alors le mot anglais en minuscules est inséré avec espaces."""
+    # Given
+    texte = "もイエスしかない"
+    # When
+    resultat = remplacer_emprunts_katakana(texte)
+    # Then
+    assert resultat == "も yes しかない"

@@ -1,6 +1,8 @@
 import re
 import cutlet
 
+from core.formattage_kara.dictionnaire_katakana import KATAKANA_VERS_ANGLAIS
+
 _KATAKANA = re.compile(r"[ァ-ヾー]+")
 _SEUIL_RATIO_LONGUEUR = 0.7
 
@@ -22,6 +24,10 @@ def remplacer_emprunts_katakana(texte: str) -> str:
 
 def _resoudre_sequence(match: re.Match) -> str:
     sequence = match.group(0)
+
+    if sequence in KATAKANA_VERS_ANGLAIS:
+        return KATAKANA_VERS_ANGLAIS[sequence]
+
     forme_phonetique = _katsu_phonetique.romaji(sequence, capitalize=False).strip()
     forme_etrangere = _katsu_etranger.romaji(sequence, capitalize=False).strip()
 
