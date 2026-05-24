@@ -63,28 +63,36 @@ Traite le texte ligne par ligne en appelant les autres modules dans l'ordre du p
 
 Point d'entrée : `remplacer_emprunts_katakana(texte: str) → str`
 
-Pour chaque séquence katakana détectée, compare deux romanisations :
-
-- **forme phonétique** — romanisation japonaise standard
-- **forme étrangère** — romanisation avec règles d'emprunt
-
-Deux règles de décision, appliquées dans l'ordre :
+Pour chaque séquence katakana détectée, trois règles de décision sont appliquées dans l'ordre :
 
 | Règle | Condition | Résultat |
 |-------|-----------|----------|
-| Pas d'équivalent étranger | Les deux formes sont identiques | Conservé en katakana |
-| Translittération directe | `len(phonétique) / len(étrangère) ≥ 0.7` | Remplacé par la forme étrangère en MAJUSCULES |
+| **Dictionnaire d'exceptions** | La séquence est présente dans `KATAKANA_VERS_ANGLAIS` | Remplacé par le mot du dictionnaire (minuscules) |
+| Pas d'équivalent étranger | Les deux formes cutlet sont identiques | Conservé en katakana |
+| Translittération directe | `len(phonétique) / len(étrangère) ≥ 0.7` | Remplacé par la forme étrangère (minuscules) |
 | Abréviation japonaise | Ratio < 0.7 | Conservé en katakana |
+
+Le dictionnaire est consulté **avant** cutlet — il court-circuite le calcul de ratio pour les mots dont cutlet choisit la mauvaise langue étrangère.
 
 **Exemples :**
 
-| Katakana | Phonétique | Étrangère | Ratio | Résultat |
-|----------|-----------|-----------|-------|----------|
-| サッカー | sakkaa (6) | soccer (6) | 1.0 | `SOCCER` |
-| テレビ | terebi (6) | television (10) | 0.6 | `テレビ` (conservé) |
-| カラオケ | karaoke | karaoke | — (identiques) | `カラオケ` (conservé) |
+| Katakana | Mécanisme | Résultat |
+|----------|-----------|----------|
+| サッカー | ratio 1.0 ≥ 0.7 | `soccer` |
+| テレビ | ratio 0.6 < 0.7 | `テレビ` (conservé) |
+| カラオケ | phonétique == étrangère | `カラオケ` (conservé) |
+| イエス | dictionnaire (`Iesous` détecté par cutlet au lieu de `yes`) | `yes` |
+| レッツゴー | dictionnaire (`rettsu go` détecté par cutlet au lieu de `let's go`) | `let's go` |
 
 Le seuil est configurable via `_SEUIL_RATIO_LONGUEUR = 0.7`.
+
+---
+
+### `dictionnaire_katakana.py` — Exceptions au détecteur
+
+Dictionnaire `KATAKANA_VERS_ANGLAIS: dict[str, str]` — katakana exact → mot anglais en minuscules.
+
+Utilisé quand cutlet associe un katakana à la mauvaise langue étrangère (grec, allemand, etc.) au lieu de l'anglais. Les valeurs sont en minuscules : la casse finale est gérée par l'étape de restauration du texte latin.
 
 ---
 
@@ -144,7 +152,7 @@ II NE
 | Fichier | Ce qui est testé |
 |---------|-----------------|
 | `tests/formattage_kara/test_romaniseur.py` | Romanisation hiragana, kanji, katakana ; préservation du latin ; particules ; multi-lignes |
-| `tests/formattage_kara/test_detecteur_emprunts.py` | Translittération directe, abréviations, formes identiques, texte sans katakana |
+| `tests/formattage_kara/test_detecteur_emprunts.py` | Translittération directe, abréviations, formes identiques, texte sans katakana, dictionnaire d'exceptions |
 | `tests/formattage_kara/test_post_traitement.py` | Suppression de ponctuation, apostrophes, parenthèses ASCII et japonaises, rattachement des n isolés, correction ra → la |
 
 Les tests sont lancés automatiquement avant chaque commit via le hook `pre-commit`.
@@ -185,3 +193,7 @@ def test_lorsque_hiragana_saisi_alors_romaji_retourne():
 |---|---|
 | `cutlet` | Romanisation japonaise (Hepburn) |
 | `fugashi[unidic-lite]` | Analyseur morphologique utilisé par cutlet |
+
+## Point ouvert
+
+`cutlet` avec `use_foreign_spelling=True` peut associer un katakana à la mauvaise langue étrangère (ex. `マイン` → `mein` (allemand) au lieu de `mine` (anglais)). Le dictionnaire d'exceptions couvre les cas connus. Pour les cas non couverts, options discutées : filtre de langue (langdetect/lingua) ou extension du dictionnaire.
