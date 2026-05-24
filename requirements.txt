@@ -7,3 +7,5 @@ ruff
 cutlet
 fugashi[unidic-lite]
 requests
+Pillow
+mutagen
