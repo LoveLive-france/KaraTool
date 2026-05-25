@@ -1,3 +1,4 @@
+import os
 import sys
 import tempfile
 import threading
@@ -65,7 +66,9 @@ class DialogMiseAJour(ctk.CTkToplevel):
             self.after(0, self._on_erreur_telechargement)
             return
         lancer_remplacement(chemin_nouveau, self._chemin_exe_actuel)
-        sys.exit(0)
+        # @devnote : sys.exit() depuis un thread daemon lève SystemExit sur ce thread
+        # uniquement, Tkinter continue. os._exit() termine le processus entier.
+        os._exit(0)
 
     def _on_progression(self, octets_recus: int, taille_totale: int):
         if taille_totale > 0:
