@@ -14,14 +14,14 @@
     <MajorUpgrade DowngradeErrorMessage="Une version plus récente de KaraTool est déjà installée." />
 
     <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLFOLDER" Name="KaraTool">
-          <Component Id="MainExecutable" Guid="*">
-            <File Id="KaraToolExe"
-                  Source="$(var.ExePath)"
-                  KeyPath="yes" />
-          </Component>
-        </Directory>
+      <!-- ✅ LocalAppDataFolder au lieu de ProgramFilesFolder pour perUser -->
+      <Directory Id="LocalAppDataFolder">
+	      <Directory Id="INSTALLFOLDER" Name="KaraTool" />
+	            <Component Id="MainExecutable" Guid="*">
+        <File Id="KaraToolExe"
+              Source="$(var.ExePath)"
+              KeyPath="yes" />
+      </Component>
       </Directory>
 
       <Directory Id="ProgramMenuFolder">
@@ -31,16 +31,26 @@
       <Directory Id="DesktopFolder" />
     </Directory>
 
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="MainExecutable" Guid="*">
+        <File Id="KaraToolExe"
+              Source="$(var.ExePath)"
+              KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
     <DirectoryRef Id="AppProgramsFolder">
       <Component Id="StartMenuShortcut" Guid="*">
+        <!-- ✅ Nom de l'exe dynamique via variable -->
         <Shortcut Id="ApplicationStartMenuShortcut"
                   Name="KaraTool"
                   Description="KaraTool"
-                  Target="[INSTALLFOLDER]KaraTool_v4.0.2.exe"
+                  Target="[INSTALLFOLDER]$(var.ExeName)"
                   WorkingDirectory="INSTALLFOLDER" />
         <RemoveFolder Id="RemoveAppProgramsFolder" On="uninstall" />
+        <!-- ✅ Suppression des double-backslash inutiles -->
         <RegistryValue Root="HKCU"
-                       Key="Software\\LoveLiveFrance\\KaraTool"
+                       Key="Software\LoveLiveFrance\KaraTool"
                        Name="installed"
                        Type="integer"
                        Value="1"
@@ -53,10 +63,10 @@
         <Shortcut Id="ApplicationDesktopShortcut"
                   Name="KaraTool"
                   Description="KaraTool"
-                  Target="[INSTALLFOLDER]KaraTool_v4.0.2.exe"
+                  Target="[INSTALLFOLDER]$(var.ExeName)"
                   WorkingDirectory="INSTALLFOLDER" />
         <RegistryValue Root="HKCU"
-                       Key="Software\\LoveLiveFrance\\KaraTool"
+                       Key="Software\LoveLiveFrance\KaraTool"
                        Name="desktop"
                        Type="integer"
                        Value="1"
