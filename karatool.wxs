@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product
+    Id="73CE215C-0A91-43E5-AADD-03CB9214E32B"
+    Name="KaraTool"
+    Language="1036"
+    Version="4.0.2"
+    Manufacturer="Love Live France"
+    UpgradeCode="73CE215C-0A91-43E5-AADD-03CB9214E32B">
+
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <MediaTemplate EmbedCab="yes"/>
+
+    <MajorUpgrade DowngradeErrorMessage="Une version plus récente de KaraTool est déjà installée." />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="KaraTool">
+          <Component Id="MainExecutable" Guid="*">
+            <File Id="KaraToolExe"
+                  Source="KaraTool_pkg/KaraTool_v4.0.2.exe"
+                  KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="AppProgramsFolder" Name="KaraTool" />
+      </Directory>
+
+      <Directory Id="DesktopFolder" />
+    </Directory>
+
+    <DirectoryRef Id="AppProgramsFolder">
+      <Component Id="StartMenuShortcut" Guid="*">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="KaraTool"
+                  Description="KaraTool"
+                  Target="[INSTALLFOLDER]KaraTool_v4.0.2.exe"
+                  WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="RemoveAppProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU"
+                       Key="Software\\LoveLiveFrance\\KaraTool"
+                       Name="installed"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="DesktopShortcut" Guid="*">
+        <Shortcut Id="ApplicationDesktopShortcut"
+                  Name="KaraTool"
+                  Description="KaraTool"
+                  Target="[INSTALLFOLDER]KaraTool_v4.0.2.exe"
+                  WorkingDirectory="INSTALLFOLDER" />
+        <RegistryValue Root="HKCU"
+                       Key="Software\\LoveLiveFrance\\KaraTool"
+                       Name="desktop"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="MainFeature" Title="KaraTool" Level="1">
+      <ComponentRef Id="MainExecutable" />
+      <ComponentRef Id="StartMenuShortcut" />
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+  </Product>
+</Wix>
