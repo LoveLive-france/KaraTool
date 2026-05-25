@@ -194,6 +194,12 @@ def test_lorsque_hiragana_saisi_alors_romaji_retourne():
 | `cutlet` | Romanisation japonaise (Hepburn) |
 | `fugashi[unidic-lite]` | Analyseur morphologique utilisé par cutlet |
 
+## Maintenance de la documentation
+
+Toute modification du pipeline (nouveau module, changement de règle, nouveau cas dans le dictionnaire) doit être reflétée dans ce fichier avant de considérer la tâche terminée. Voir `standard.md` § Documentation.
+
+---
+
 ## Point ouvert
 
 `cutlet` avec `use_foreign_spelling=True` peut associer un katakana à la mauvaise langue étrangère (ex. `マイン` → `mein` (allemand) au lieu de `mine` (anglais)). Le dictionnaire d'exceptions couvre les cas connus. Pour les cas non couverts, options discutées : filtre de langue (langdetect/lingua) ou extension du dictionnaire.
