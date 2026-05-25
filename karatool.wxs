@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product
-    Id="73CE215C-0A91-43E5-AADD-03CB9214E32B"
+    Id="*"
     Name="KaraTool"
     Language="1036"
     Version="$(var.Version)"
     Manufacturer="Love Live France"
-    UpgradeCode="73CE215C-0A91-43E5-AADD-03CB9214E32B">
+    UpgradeCode="73CE215C-0A91-43E5-AADD-03CB9214E32C">
 
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perUser"/>
     <MediaTemplate EmbedCab="yes"/>
