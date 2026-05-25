@@ -17,11 +17,6 @@
       <!-- ✅ LocalAppDataFolder au lieu de ProgramFilesFolder pour perUser -->
       <Directory Id="LocalAppDataFolder">
 	      <Directory Id="INSTALLFOLDER" Name="KaraTool" />
-	            <Component Id="MainExecutable" Guid="*">
-        <File Id="KaraToolExe"
-              Source="$(var.ExePath)"
-              KeyPath="yes" />
-      </Component>
       </Directory>
 
       <Directory Id="ProgramMenuFolder">
