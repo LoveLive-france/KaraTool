@@ -63,3 +63,10 @@ Le développement suit le cycle **Red → Green → Refactor** :
 3. **Refactor** — améliorer le code sans changer son comportement (les tests doivent toujours passer).
 
 Toute nouvelle fonctionnalité ou correction de bug commence par un test.
+
+## Documentation
+
+Toute nouvelle fonctionnalité doit être reflétée dans les fichiers de documentation concernés avant de considérer la tâche terminée :
+
+- **`AGENTS.md`** — si l'architecture, les contraintes non-évidentes ou le workflow changent.
+- **`doc/formattage_kara.md`** — si le pipeline de romanisation ou ses modules évoluent.
