@@ -4,7 +4,7 @@
     Id="73CE215C-0A91-43E5-AADD-03CB9214E32B"
     Name="KaraTool"
     Language="1036"
-    Version="4.0.2"
+    Version="$(var.Version)"
     Manufacturer="Love Live France"
     UpgradeCode="73CE215C-0A91-43E5-AADD-03CB9214E32B">
 
@@ -18,7 +18,7 @@
         <Directory Id="INSTALLFOLDER" Name="KaraTool">
           <Component Id="MainExecutable" Guid="*">
             <File Id="KaraToolExe"
-                  Source="dist/KaraTool_v4.0.2.exe"
+                  Source="$(var.ExePath)"
                   KeyPath="yes" />
           </Component>
         </Directory>
