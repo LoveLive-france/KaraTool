@@ -61,7 +61,7 @@ jobs:
         run: sudo apt-get install -y wixl
       
       - name: Build MSI 
-        run: wixl -o KaraTool_${{ github.ref_name }}.msi karatool.wxs 
+        run: wixl -o KaraTool_${{ github.ref_name }}.msi -D ExePath="dist/KaraTool_${{ github.ref_name }}.exe" -D Version="${{ github.ref_name }}" karatool.wxs 
 
       - name: Upload msi artifact
         uses: actions/upload-artifact@v4
