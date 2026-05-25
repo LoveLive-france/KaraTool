@@ -117,6 +117,16 @@ def test_lorsque_katakana_dans_dictionnaire_alors_mot_anglais_retourne():
     assert resultat == "yes"
 
 
+def test_lorsque_katakana_altere_par_mecab_alors_forme_du_dictionnaire_retournee():
+    """Lorsque MeCab tokenise le katakana en plusieurs tokens (ex: アルテマ → アル+テマ), alors la forme du dictionnaire est retournée."""
+    # Given
+    texte = "アルテマ"
+    # When
+    resultat = remplacer_emprunts_katakana(texte)
+    # Then
+    assert resultat == "ultima"
+
+
 def test_lorsque_katakana_dans_dictionnaire_dans_phrase_alors_mot_anglais_insere():
     """Lorsque le katakana du dictionnaire est dans une phrase, alors le mot anglais en minuscules est inséré avec espaces."""
     # Given
