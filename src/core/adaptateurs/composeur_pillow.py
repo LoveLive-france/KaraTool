@@ -2,8 +2,9 @@ from io import BytesIO
 
 from PIL import Image, ImageFilter, ImageOps
 
-FACTEUR_HAUTEUR_DEFAUT = 0.75
-MARGE_GAUCHE_DEFAUT = 0.05
+FACTEUR_HAUTEUR_DEFAUT = 0.6
+MARGE_GAUCHE_DEFAUT = 0.0625
+_OPACITE_FOND = 0.5
 
 
 class ComposeurPillow:
@@ -18,8 +19,11 @@ class ComposeurPillow:
     def couvrir_et_flouter(
         self, image: Image.Image, largeur: int, hauteur: int
     ) -> Image.Image:
-        fond = ImageOps.fit(image, (largeur, hauteur))
-        return fond.filter(ImageFilter.GaussianBlur(radius=30))
+        flou = ImageOps.fit(image, (largeur, hauteur)).filter(
+            ImageFilter.GaussianBlur(radius=20)
+        )
+        fond_noir = Image.new("RGB", (largeur, hauteur), (0, 0, 0))
+        return Image.blend(fond_noir, flou.convert("RGB"), alpha=_OPACITE_FOND)
 
     def placer_avant_plan(
         self, fond: Image.Image, image_originale: Image.Image

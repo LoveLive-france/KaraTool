@@ -97,6 +97,7 @@ Trois règles dans l'ordre, pour chaque séquence katakana :
 
 - **Auto-updater Windows-only** : `lancer_remplacement()` dans `auto_updater.py` lance un `.bat` via `cmd.exe` pour remplacer l'exe en cours d'exécution (verrouillé sous Windows par le kernel). `creationflags=DETACHED_PROCESS` est Windows-only. Pas de chemin d'exécution sur Linux/macOS — l'app est distribuée uniquement en `.exe`.
 - **Styles ASS** : bundlés dans l'exe via `sys._MEIPASS`, copiés à `%APPDATA%/KaraTool/` au premier lancement. L'utilisateur peut importer des styles depuis un `.ass` existant ; ils sont fusionnés sans écraser les styles existants.
+- **Fond cover assombri** : `couvrir_et_flouter` dans `composeur_pillow.py` blende l'image floutée à 50% sur un canvas noir (`Image.blend(fond_noir, flou, alpha=0.5)`), équivalent du `-compose Blend -define compose:args=50` d'ImageMagick.
 - **`cutlet` supprime les espaces** entre tokens japonais et non-japonais adjacents → `_separer_emprunts_du_romaji_adjacent()` les réinsère par regex.
 - **Particule へ** : cutlet romanise en `"e"` (Hepburn standard), corrigé en `"he"` en post-traitement uniquement quand c'est un mot isolé (`\be\b`).
 
