@@ -9,3 +9,5 @@ fugashi[unidic-lite]
 requests
 Pillow
 mutagen
+python-vlc
+mutagen
