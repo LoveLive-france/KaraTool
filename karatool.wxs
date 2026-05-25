@@ -8,7 +8,7 @@
     Manufacturer="Love Live France"
     UpgradeCode="73CE215C-0A91-43E5-AADD-03CB9214E32B">
 
-    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perUser"/>
     <MediaTemplate EmbedCab="yes"/>
 
     <MajorUpgrade DowngradeErrorMessage="Une version plus récente de KaraTool est déjà installée." />
