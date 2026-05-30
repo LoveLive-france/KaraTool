@@ -10,6 +10,3 @@ requests
 Pillow
 mutagen
 python-vlc
-pathlib
-tkinter
-tempfile
