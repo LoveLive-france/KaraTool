@@ -10,4 +10,7 @@ requests
 Pillow
 mutagen
 python-vlc
-mutagen
+PIL
+pathlib
+tkinter
+tempfile

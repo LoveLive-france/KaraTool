@@ -36,9 +36,9 @@ class App(ctk.CTk):
 
         TabTelechargeur(onglets.add("Téléchargeur")).pack(fill="both", expand=True)
         TabTexteJaponais(onglets.add("Formattage Kara")).pack(fill="both", expand=True)
-        TabEncodeur(onglets.add("Réencodage Vidéo")).pack(fill="both", expand=True)
+        TabEncodeur(onglets.add("Réencodage")).pack(fill="both", expand=True)
         TabCoverAudio(onglets.add("Cover Audio")).pack(fill="both", expand=True)
-        TabLecteur(onglets.add("Lecteur Vidéo")).pack(fill="both", expand=True)
+        TabLecteur(onglets.add("Lecteur")).pack(fill="both", expand=True)
 
     def _verifier_mise_a_jour(self):
         from core.auto_updater import verifier_nouvelle_version

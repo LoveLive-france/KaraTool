@@ -16,7 +16,7 @@ class TabEncodeur(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
 
         self.btn_input = ctk.CTkButton(
-            self, text="Sélectionner vidéo", command=self._on_choose_file
+            self, text="Sélectionner un média (Vidéo ou Audio)", command=self._on_choose_file
         )
         self.btn_input.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="ew")
 
@@ -33,46 +33,57 @@ class TabEncodeur(ctk.CTkFrame):
         )
         self.label_output.grid(row=3, column=0, pady=(0, 15))
 
-        self.video_bitrate = ctk.IntVar(value=4000)
+        self.bitrate_frame = ctk.CTkFrame(self)
+        self.bitrate_frame.grid_columnconfigure(0, weight=1)
 
-        bitrate_frame = ctk.CTkFrame(self)
-        bitrate_frame.grid(row=4, column=0, padx=20, pady=10, sticky="ew")
-        bitrate_frame.grid_columnconfigure(0, weight=1)
+        self.bitrate_label = ctk.CTkLabel(self.bitrate_frame, text="")
+        self.bitrate_label.grid(row=0, column=0, sticky="w", padx=10, pady=(10, 5))
 
-        ctk.CTkLabel(bitrate_frame, text="Bitrate vidéo (kbps) (Par défaut 4000)").grid(
-            row=0, column=0, sticky="w", padx=10, pady=(10, 5)
-        )
-
-        self.bitrate_entry = ctk.CTkEntry(bitrate_frame)
-        self.bitrate_entry.insert(0, "4000")
+        self.bitrate_entry = ctk.CTkEntry(self.bitrate_frame)
         self.bitrate_entry.grid(row=1, column=0, padx=10, pady=(0, 10), sticky="ew")
+        
+        self.btn_encode = ctk.CTkButton(self, text="Encoder le média", command=self._on_encoding)
+        self.btn_encode.grid(row=5, column=0, padx=20, pady=(30, 10), sticky="ew")
 
-        def sync_bitrate(event=None):
-            try:
-                self.video_bitrate.set(int(self.bitrate_entry.get()))
-            except Exception:
-                pass
-
-        self.bitrate_entry.bind("<KeyRelease>", sync_bitrate)
-
-        self.btn_encode = ctk.CTkButton(self, text="Encoder", command=self._on_encoding)
-        self.btn_encode.grid(row=5, column=0, padx=20, pady=(30, 20), sticky="ew")
+        self.progress = ctk.CTkProgressBar(self)
+        self.progress.grid(row=6, column=0, padx=20, pady=(0, 10), sticky="ew")
+        self.progress.set(0)
 
         self.status_label = ctk.CTkLabel(self, text="En attente...")
-        self.status_label.grid(row=6, column=0, pady=(0, 20))
+        self.status_label.grid(row=7, column=0, pady=(0, 20))
 
     def _on_choose_file(self):
         path = filedialog.askopenfilename(
-            filetypes=[("Vidéo", "*.mp4 *.webm *.mkv *.mov")]
+            filetypes=[
+                ("Tous les médias supportés", "*.mp4 *.webm *.mkv *.mov *.mp3 *.wav *.flac *.m4a"),
+                ("Fichiers Vidéo", "*.mp4 *.webm *.mkv *.mov"),
+                ("Fichiers Audio", "*.mp3 *.wav *.flac *.m4a")
+            ]
         )
 
         if path:
             self.input_file = path
             self.label_input.configure(text=path)
+            
+            ext = os.path.splitext(path)[1].lower()
+            is_audio = ext in [".mp3", ".wav", ".flac", ".m4a", ".ogg"]
+            
+            self.bitrate_frame.grid(row=4, column=0, padx=20, pady=10, sticky="ew")
+            
+            self.bitrate_entry.delete(0, "end")
+            
+            if is_audio:
+                self.bitrate_label.configure(text="Bitrate Audio souhaité (kbps) (Par défaut : 256)")
+                self.bitrate_entry.insert(0, "256")
+            else:
+                self.bitrate_label.configure(text="Bitrate Vidéo x265 souhaité (kbps) (Par défaut : 4000)")
+                self.bitrate_entry.insert(0, "4000")
+        else:
+            if not self.input_file:
+                self.bitrate_frame.grid_forget()
 
     def _on_choose_folder(self):
         folder = filedialog.askdirectory()
-
         if folder:
             self.output_folder = folder
             self.label_output.configure(text=folder)
@@ -87,6 +98,20 @@ class TabEncodeur(ctk.CTkFrame):
             self.output_folder = os.path.dirname(self.input_file)
             self._manager.set_folder(self.output_folder)
             self.label_output.configure(text=self.output_folder)
+
+        try:
+            bitrate_val = int(self.bitrate_entry.get())
+        except ValueError:
+            self.status_label.configure(text="❌ Le bitrate doit être un nombre entier valide")
+            return
+
+        ext = os.path.splitext(self.input_file)[1].lower()
+        is_audio = ext in [".mp3", ".wav", ".flac", ".m4a", ".ogg"]
+
+        if is_audio:
+            self._manager.set_bitrate_params(audio_bitrate=bitrate_val)
+        else:
+            self._manager.set_bitrate_params(video_bitrate=bitrate_val)
 
         self._manager.add(self.input_file)
         self._manager.start()
@@ -104,7 +129,7 @@ class TabEncodeur(ctk.CTkFrame):
             self.status_label.configure(text_color="green")
         elif "❌" in status:
             self.status_label.configure(text_color="red")
-        elif "⬇️" in status or "⏳" in status:
+        elif "⏳" in status:
             self.status_label.configure(text_color="cyan")
         else:
             self.status_label.configure(text_color="gray")
