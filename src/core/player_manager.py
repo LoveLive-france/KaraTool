@@ -1,6 +1,6 @@
-import vlc
-import os
 from pathlib import Path
+import os
+import vlc
 
 
 class PlayerManager:
