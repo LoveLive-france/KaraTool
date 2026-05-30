@@ -6,8 +6,16 @@ from tkinter import messagebox
 
 # On exécute la détection directement au chargement du fichier
 chemins_registre = [
-    (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\VideoLAN\VLC", winreg.KEY_READ | winreg.KEY_WOW64_64KEY),
-    (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\VideoLAN\VLC", winreg.KEY_READ | winreg.KEY_WOW64_32KEY),
+    (
+        winreg.HKEY_LOCAL_MACHINE,
+        r"SOFTWARE\VideoLAN\VLC",
+        winreg.KEY_READ | winreg.KEY_WOW64_64KEY,
+    ),
+    (
+        winreg.HKEY_LOCAL_MACHINE,
+        r"SOFTWARE\VideoLAN\VLC",
+        winreg.KEY_READ | winreg.KEY_WOW64_32KEY,
+    ),
 ]
 
 vlc_trouve = False
