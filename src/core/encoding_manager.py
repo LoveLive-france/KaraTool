@@ -11,38 +11,56 @@ def get_ffmpeg_path():
     return os.getcwd()
 
 
-def encode_video(
+def encode_media(  # Renommé en encode_media pour la cohérence
     input_file,
     output_file,
     video_bitrate=4000,
     audio_bitrate=256,
     progress_callback=None,
 ):
-    audio_copy = has_opus_audio(input_file)
+    # 1. Détection du type de fichier (Audio ou Vidéo)
+    ext = os.path.splitext(input_file)[1].lower()
+    is_audio = ext in [".mp3", ".wav", ".flac", ".m4a", ".ogg"]
 
-    cmd = [
-        "ffmpeg",
-        "-y",
-        "-i",
-        input_file,
-        "-c:v",
-        "libx265",
-        "-preset",
-        "fast",
-        "-b:v",
-        f"{video_bitrate}k",
-        # optionnel mais important pour stabilité bitrate
-        "-maxrate",
-        f"{video_bitrate * 2}k",
-        "-bufsize",
-        f"{video_bitrate * 4}k",
-        "-movflags",
-        "+faststart",
-    ]
-    if audio_copy:
-        cmd += ["-c:a", "copy"]
+    if is_audio:
+        # Encodage AUDIO : On force le codec MP3 en débit CONSTANT (CBR)
+        # On utilise 320k par défaut pour une qualité maximale indispensable au karaoké
+        bitrate_cbr = f"{audio_bitrate}k" if audio_bitrate else "320k"
+        cmd = [
+            "ffmpeg",
+            "-y",
+            "-i",
+            input_file,
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            bitrate_cbr,
+        ]
     else:
-        cmd += ["-c:a", "aac", "-b:a", f"{audio_bitrate}k"]
+        # Encodage VIDÉO : On garde exactement ton paramétrage initial x265
+        audio_copy = has_opus_audio(input_file)
+        cmd = [
+            "ffmpeg",
+            "-y",
+            "-i",
+            input_file,
+            "-c:v",
+            "libx265",
+            "-preset",
+            "fast",
+            "-b:v",
+            f"{video_bitrate}k",
+            "-maxrate",
+            f"{video_bitrate * 2}k",
+            "-bufsize",
+            f"{video_bitrate * 4}k",
+            "-movflags",
+            "+faststart",
+        ]
+        if audio_copy:
+            cmd += ["-c:a", "copy"]
+        else:
+            cmd += ["-c:a", "aac", "-b:a", f"{audio_bitrate}k"]
 
     cmd.append(output_file)
 
@@ -75,9 +93,8 @@ def has_opus_audio(file):
         "json",
         file,
     ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
-
     try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
         data = json.loads(result.stdout)
         return data["streams"][0]["codec_name"] == "opus"
     except Exception:
@@ -89,6 +106,8 @@ class EncodingManager:
         self.queue = []
         self.output_folder = os.getcwd()
         self.on_update = on_update
+        self.video_bitrate = 4000
+        self.audio_bitrate = 256
 
     def set_bitrate_params(self, video_bitrate=4000, audio_bitrate=256):
         self.video_bitrate = video_bitrate
@@ -115,14 +134,24 @@ class EncodingManager:
             self.on_update(item_id, "⏳ Démarrage", i / total)
 
             base = os.path.splitext(os.path.basename(input_file))[0]
-            output_file = os.path.join(self.output_folder, f"{base}_x265.mp4")
+            ext = os.path.splitext(input_file)[1].lower()
+
+            if ext in [".mp3", ".wav", ".flac", ".m4a", ".ogg"]:
+                output_file = os.path.join(self.output_folder, f"{base}_fixed_cbr.mp3")
+            else:
+                output_file = os.path.join(self.output_folder, f"{base}_x265.mp4")
 
             def progress(line):
-                # ultra simple (tu peux améliorer après)
                 self.on_update(item_id, "🔄 Encodage...", None)
 
             try:
-                code = encode_video(input_file, output_file, progress)
+                code = encode_media(
+                    input_file=input_file,
+                    output_file=output_file,
+                    video_bitrate=self.video_bitrate,
+                    audio_bitrate=self.audio_bitrate,
+                    progress_callback=progress,
+                )
 
                 if code == 0:
                     self.on_update(item_id, "✔️ Terminé", (i + 1) / total)
