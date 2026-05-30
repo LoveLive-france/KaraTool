@@ -4,6 +4,7 @@ from core.formattage_kara.post_traitement import post_traiter
 from core.formattage_kara.detecteur_emprunts import remplacer_emprunts_katakana
 
 _katsu = cutlet.Cutlet(use_foreign_spelling=False)
+_katsu.use_tch = False
 _katsu.add_exception("私", "watashi")
 _LATIN = re.compile(r"[A-Za-z']+")
 _JAPONAIS = re.compile(r"[ぁ-ん゛゜ァ-ヾ一-龯]")

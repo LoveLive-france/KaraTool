@@ -289,6 +289,17 @@ def test_lorsque_mot_title_case_dans_ligne_japonaise_alors_toujours_en_majuscule
     assert "FEVER" in resultat_toggle_actif
 
 
+def test_lorsque_sokuon_avant_chi_alors_romanise_cch_et_non_tch():
+    """Lorsqu'un っ précède ち, alors la consonne doublée est romanisée "cch" et non "tch"."""
+    # Given
+    phrase = "察知したい"
+    # When
+    resultat = romaniser_texte(phrase)
+    # Then
+    assert "sacchi" in resultat
+    assert "satchi" not in resultat
+
+
 def test_lorsque_kanji_watashi_alors_romanise_watashi_et_non_watakushi():
     """Lorsque 私 est présent, alors il est romanisé "watashi" et non "watakushi"."""
     # Given
