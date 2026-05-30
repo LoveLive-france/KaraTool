@@ -10,7 +10,6 @@ requests
 Pillow
 mutagen
 python-vlc
-PIL
 pathlib
 tkinter
 tempfile
