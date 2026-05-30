@@ -4,6 +4,7 @@ import sys
 import winreg
 from tkinter import messagebox
 
+# On exécute la détection directement au chargement du fichier
 chemins_registre = [
     (
         winreg.HKEY_LOCAL_MACHINE,
@@ -18,7 +19,6 @@ chemins_registre = [
 ]
 
 vlc_trouve = False
-
 for ruche, sous_cle, acces in chemins_registre:
     try:
         cle = winreg.OpenKey(ruche, sous_cle, 0, acces)
