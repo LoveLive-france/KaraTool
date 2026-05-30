@@ -47,6 +47,12 @@ Point d'entrée : `romaniser_texte(texte_japonais: str) → str`
 
 Traite le texte ligne par ligne en appelant les autres modules dans l'ordre du pipeline.
 
+**Exceptions de lecture (`add_exception`) :**
+
+| Kanji | Lecture cutlet par défaut | Lecture corrigée | Raison |
+|-------|--------------------------|------------------|--------|
+| 私 | watakushi | watashi | cutlet choisit la lecture formelle, quasi absente des chansons |
+
 **Casse du texte latin (`_casse_segment_latin`) :**
 
 | Segment original | Condition | Résultat |

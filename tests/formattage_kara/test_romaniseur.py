@@ -287,3 +287,14 @@ def test_lorsque_mot_title_case_dans_ligne_japonaise_alors_toujours_en_majuscule
     # Then
     assert "FEVER" in resultat_toggle_inactif
     assert "FEVER" in resultat_toggle_actif
+
+
+def test_lorsque_kanji_watashi_alors_romanise_watashi_et_non_watakushi():
+    """Lorsque 私 est présent, alors il est romanisé "watashi" et non "watakushi"."""
+    # Given
+    phrase = "私もドキドキだよ"
+    # When
+    resultat = romaniser_texte(phrase)
+    # Then
+    assert "watashi" in resultat
+    assert "watakushi" not in resultat
