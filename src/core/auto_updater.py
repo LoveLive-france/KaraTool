@@ -54,10 +54,14 @@ def lancer_remplacement(chemin_nouveau: str, chemin_actuel: str) -> None:
     )
     chemin_bat = Path(tempfile.gettempdir()) / "karatool_update.bat"
     chemin_bat.write_text(contenu_bat, encoding="utf-8")
+    # @devnote : CREATE_NO_WINDOW requis pour apps sans console (PyInstaller console=False) —
+    # DETACHED_PROCESS est ignoré dans ce contexte et empêche cmd.exe de démarrer correctement.
     subprocess.Popen(
         ["cmd", "/c", str(chemin_bat)],
-        creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP,
-        close_fds=True,
+        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
 
 
