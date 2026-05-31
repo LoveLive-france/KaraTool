@@ -1,7 +1,6 @@
 import threading
 
 import customtkinter as ctk
-import core.adaptateurs.init_vlc  # noqa: F401
 
 from ui.tabs.tab_telechargeur import TabTelechargeur
 from ui.tabs.tab_texte_japonais import TabTexteJaponais
