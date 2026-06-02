@@ -3,6 +3,7 @@ import re
 
 def post_traiter(texte: str) -> str:
     texte = _rattacher_n_isole(texte)
+    texte = _rattacher_sokuon_fragmente(texte)
     texte = _corriger_ra_en_la(texte)
     texte = _extraire_parentheses_en_nouvelle_ligne(texte)
     texte = _supprimer_ponctuation(texte)
@@ -37,6 +38,12 @@ def _fusionner_la_adjacents(texte: str) -> str:
 
 def _rattacher_n_isole(texte: str) -> str:
     return re.sub(r"(?<=\w) n (?=\w)", "n", texte)
+
+
+def _rattacher_sokuon_fragmente(texte: str) -> str:
+    # @devnote MeCab fragmente parfois le sokuon (っ) sur une frontière de token (ex: だって → "da tte") ;
+    # une consonne doublée en début de token après une espace signale toujours ce cas.
+    return re.sub(r"(\w) (([bcdfghjklmnpqrstvwxyz])\3\w*)", r"\1\2", texte)
 
 
 def _extraire_parentheses_en_nouvelle_ligne(texte: str) -> str:
