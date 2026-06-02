@@ -309,3 +309,13 @@ def test_lorsque_kanji_watashi_alors_romanise_watashi_et_non_watakushi():
     # Then
     assert "watashi" in resultat
     assert "watakushi" not in resultat
+
+
+def test_lorsque_sokuon_fragmente_entre_tokens_alors_consonnes_jointes():
+    """Lorsque le sokuon sépare deux tokens (ex : だって → da tte), alors les consonnes doublées sont rattachées."""
+    # Given
+    phrase = "だって"
+    # When
+    resultat = romaniser_texte(phrase)
+    # Then
+    assert resultat == "datte"
