@@ -109,6 +109,54 @@ def test_lorsque_dossier_destination_fourni_alors_outtmpl_contient_ce_dossier():
     assert options["outtmpl"].startswith("/mon/dossier")
 
 
+def test_lorsque_format_video_qualite_meilleure_alors_format_est_bestvideo_sans_contrainte():
+    """Lorsque le format est Vidéo et la qualité est Meilleure, alors le format yt-dlp est bestvideo+bestaudio/best."""
+    # Given / When
+    options = build_ydl_opts(
+        "https://example.com", "Vidéo", "/tmp", qualite_video="Meilleure"
+    )
+    # Then
+    assert options["format"] == "bestvideo+bestaudio/best"
+
+
+def test_lorsque_format_video_qualite_1080p_alors_format_contient_height_1080():
+    """Lorsque le format est Vidéo et la qualité est 1080p, alors le format yt-dlp contraint la hauteur à 1080."""
+    # Given / When
+    options = build_ydl_opts(
+        "https://example.com", "Vidéo", "/tmp", qualite_video="1080p"
+    )
+    # Then
+    assert "height<=1080" in options["format"]
+
+
+def test_lorsque_format_video_qualite_720p_alors_format_contient_height_720():
+    """Lorsque le format est Vidéo et la qualité est 720p, alors le format yt-dlp contraint la hauteur à 720."""
+    # Given / When
+    options = build_ydl_opts(
+        "https://example.com", "Vidéo", "/tmp", qualite_video="720p"
+    )
+    # Then
+    assert "height<=720" in options["format"]
+
+
+def test_lorsque_format_video_qualite_480p_alors_format_contient_height_480():
+    """Lorsque le format est Vidéo et la qualité est 480p, alors le format yt-dlp contraint la hauteur à 480."""
+    # Given / When
+    options = build_ydl_opts(
+        "https://example.com", "Vidéo", "/tmp", qualite_video="480p"
+    )
+    # Then
+    assert "height<=480" in options["format"]
+
+
+def test_lorsque_qualite_video_non_fournie_alors_meilleure_qualite_utilisee_par_defaut():
+    """Lorsque qualite_video n'est pas fournie, alors le format yt-dlp est bestvideo+bestaudio/best."""
+    # Given / When
+    options = build_ydl_opts("https://example.com", "Vidéo", "/tmp")
+    # Then
+    assert options["format"] == "bestvideo+bestaudio/best"
+
+
 # --- DownloadManager.add ---
 
 
@@ -132,6 +180,16 @@ def test_lorsque_deux_ajouts_alors_identifiants_sont_sequentiels():
     # Then
     assert premier == 0
     assert deuxieme == 1
+
+
+def test_lorsque_add_avec_qualite_alors_qualite_stockee_dans_telechargement():
+    """Lorsque add est appelé avec une qualité, alors la qualité est stockée dans l'item."""
+    # Given
+    manager = DownloadManager(on_update=lambda *_: None)
+    # When
+    manager.add("https://example.com", "Vidéo", qualite_video="720p")
+    # Then
+    assert manager._telechargements[0]["qualite_video"] == "720p"
 
 
 # --- DownloadManager.set_folder / set_cookies / clear_cookies ---
