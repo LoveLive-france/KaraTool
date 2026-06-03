@@ -4,6 +4,14 @@ import threading
 from yt_dlp import YoutubeDL
 
 
+_FORMAT_PAR_QUALITE = {
+    "Meilleure": "bestvideo+bestaudio/best",
+    "1080p": "bestvideo[height<=1080]+bestaudio[ext=m4a]/best[height<=1080]",
+    "720p": "bestvideo[height<=720]+bestaudio[ext=m4a]/best[height<=720]",
+    "480p": "bestvideo[height<=480]+bestaudio[ext=m4a]/best[height<=480]",
+}
+
+
 def get_ffmpeg_path():
     if getattr(sys, "frozen", False):
         return sys._MEIPASS
@@ -11,7 +19,12 @@ def get_ffmpeg_path():
 
 
 def build_ydl_opts(
-    url, format_media, dossier_destination, cookies_file=None, rappel_progression=None
+    url,
+    format_media,
+    dossier_destination,
+    cookies_file=None,
+    rappel_progression=None,
+    qualite_video="Meilleure",
 ):
     options_telechargement = {
         "outtmpl": os.path.join(dossier_destination, "%(title)s.%(ext)s"),
@@ -28,7 +41,7 @@ def build_ydl_opts(
     if format_media == "Vidéo":
         options_telechargement.update(
             {
-                "format": "bestvideo+bestaudio/best",
+                "format": _FORMAT_PAR_QUALITE[qualite_video],
                 "merge_output_format": "mp4",
                 "ffmpeg_location": get_ffmpeg_path(),
             }
@@ -73,10 +86,15 @@ class DownloadManager:
     def clear_cookies(self):
         self.cookies_file = None
 
-    def add(self, url, format_media):
+    def add(self, url, format_media, qualite_video="Meilleure"):
         identifiant_item = len(self._telechargements)
         self._telechargements.append(
-            {"url": url, "format_media": format_media, "id": identifiant_item}
+            {
+                "url": url,
+                "format_media": format_media,
+                "qualite_video": qualite_video,
+                "id": identifiant_item,
+            }
         )
         return identifiant_item
 
@@ -89,6 +107,7 @@ class DownloadManager:
         for index, telechargement in enumerate(self._telechargements):
             url = telechargement["url"]
             format_media = telechargement["format_media"]
+            qualite_video = telechargement["qualite_video"]
             identifiant_item = telechargement["id"]
 
             self._on_update(identifiant_item, "⏳ Démarrage", index / total)
@@ -113,6 +132,7 @@ class DownloadManager:
                 self.dossier_destination,
                 self.cookies_file,
                 rappel_progression,
+                qualite_video,
             )
 
             try:

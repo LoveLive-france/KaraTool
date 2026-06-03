@@ -36,8 +36,19 @@ class TabTelechargeur(ctk.CTkFrame):
 
         self._format_selectionne = ctk.StringVar(value="Vidéo")
         ctk.CTkOptionMenu(
-            frame, values=["Vidéo", "Audio"], variable=self._format_selectionne
+            frame,
+            values=["Vidéo", "Audio"],
+            variable=self._format_selectionne,
+            command=self._on_format_change,
         ).grid(row=0, column=1, padx=10)
+
+        self._qualite_selectionnee = ctk.StringVar(value="Meilleure")
+        self._menu_qualite = ctk.CTkOptionMenu(
+            frame,
+            values=["Meilleure", "1080p", "720p", "480p"],
+            variable=self._qualite_selectionnee,
+        )
+        self._menu_qualite.grid(row=0, column=2, padx=10)
 
     def _build_liste(self):
         self._frame_liste = ctk.CTkScrollableFrame(self)
@@ -104,11 +115,17 @@ class TabTelechargeur(ctk.CTkFrame):
     def _schedule_update(self, item_id, statut, progression):
         self.after(0, lambda: self._mettre_a_jour_carte(item_id, statut, progression))
 
+    def _on_format_change(self, format_selectionne):
+        etat = "normal" if format_selectionne == "Vidéo" else "disabled"
+        self._menu_qualite.configure(state=etat)
+
     def _on_ajouter_lien(self):
         url = self._entree_url.get().strip()
         if not url:
             return
-        item_id = self._manager.add(url, self._format_selectionne.get())
+        item_id = self._manager.add(
+            url, self._format_selectionne.get(), self._qualite_selectionnee.get()
+        )
         self._creer_carte(item_id, url)
         self._entree_url.delete(0, "end")
 
