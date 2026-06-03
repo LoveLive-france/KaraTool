@@ -52,4 +52,5 @@ def _extraire_parentheses_en_nouvelle_ligne(texte: str) -> str:
 
 
 def _supprimer_ponctuation(texte: str) -> str:
+    texte = re.sub(r"(?<=\w)[^\w\s'\n]+(?=\w)", " ", texte)
     return re.sub(r"[^\w\s'\n]", "", texte)
