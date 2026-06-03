@@ -1,3 +1,4 @@
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -44,9 +45,17 @@ def telecharger_exe(
 
 def lancer_remplacement(chemin_nouveau: str, chemin_actuel: str) -> None:
     # @devnote : l'exe PyInstaller est verrouillé pendant son exécution sous Windows,
-    # impossible de le remplacer directement. Le bat attend la mort du processus.
+    # impossible de le remplacer directement. Le bat attend la mort du processus via son PID
+    # plutôt qu'un timeout fixe — PyInstaller peut mettre plusieurs secondes à nettoyer _MEI.
+    pid = os.getpid()
     contenu_bat = (
         "@echo off\n"
+        f":ATTENTE\n"
+        f'tasklist /FI "PID eq {pid}" 2>NUL | find /I "{pid}" >NUL\n'
+        f"if not errorlevel 1 (\n"
+        f"    timeout /t 1 /nobreak > nul\n"
+        f"    goto ATTENTE\n"
+        f")\n"
         "timeout /t 2 /nobreak > nul\n"
         f'move /y "{chemin_nouveau}" "{chemin_actuel}"\n'
         f'start "" "{chemin_actuel}"\n'

@@ -37,7 +37,7 @@ pre-commit install
 
 ### En local (Docker)
 
-Nécessite Docker. Génère `dist/KaraTool.exe` :
+Nécessite Docker. Génère `dist/KaraTool_vX.Y.Z.exe` :
 
 ```
 docker compose up
