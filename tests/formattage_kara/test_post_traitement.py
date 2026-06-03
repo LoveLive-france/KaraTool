@@ -68,7 +68,7 @@ def test_lorsque_ponctuation_japonaise_presente_alors_retiree():
     # When
     resultat = post_traiter(texte)
     # Then
-    assert resultat == "tokigatomareba"
+    assert resultat == "toki ga tomareba"
 
 
 def test_lorsque_n_isole_entre_deux_mots_alors_rattache():
