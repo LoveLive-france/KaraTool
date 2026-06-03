@@ -6,7 +6,7 @@ from core.download_manager import DownloadManager
 class TabTelechargeur(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent)
-        self._cards = {}
+        self._cartes = {}
         self._manager = DownloadManager(on_update=self._schedule_update)
         self._build()
         self._refresh_label_cookies()
@@ -81,13 +81,13 @@ class TabTelechargeur(ctk.CTkFrame):
         barre_progression.pack(side="right", padx=10)
         barre_progression.set(0)
 
-        self._cards[item_id] = {
+        self._cartes[item_id] = {
             "statut": label_statut,
             "progression": barre_progression,
         }
 
     def _mettre_a_jour_carte(self, item_id, statut, progression):
-        carte = self._cards.get(item_id)
+        carte = self._cartes.get(item_id)
         if not carte:
             return
         carte["statut"].configure(text=statut)
