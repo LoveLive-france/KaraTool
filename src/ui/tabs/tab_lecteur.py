@@ -27,17 +27,20 @@ class TabLecteur(ctk.CTkFrame):
         controls = ctk.CTkFrame(self)
         controls.pack(fill="x", padx=10, pady=10)
 
-        ctk.CTkButton(controls, text="Lecture", command=self._manager.play).pack(
-            side="left", padx=5
-        )
-        ctk.CTkButton(controls, text="Pause", command=self._manager.pause).pack(
-            side="left", padx=5
-        )
-        ctk.CTkButton(controls, text="Stop", command=self._manager.stop).pack(
-            side="left", padx=5
-        )
+        icon_font = ctk.CTkFont(family="Courier New", size=22, weight="bold")
+        ctk.CTkButton(
+            controls, text="►", font=icon_font, width=40, command=self._manager.play
+        ).pack(side="left", padx=5)
 
-        # Ajout d'une référence d'instance (self.) pour pouvoir modifier le texte plus tard
+        pause_font = ctk.CTkFont(family="Arial", size=20, weight="bold")
+        ctk.CTkButton(
+            controls, text="l l", font=pause_font, width=40, command=self._manager.pause
+        ).pack(side="left", padx=5)
+
+        ctk.CTkButton(
+            controls, text="■", font=icon_font, width=40, command=self._manager.stop
+        ).pack(side="left", padx=5)
+
         self.btn_media = ctk.CTkButton(
             controls, text="Ouvrir média", command=self.open_media
         )
@@ -55,11 +58,15 @@ class TabLecteur(ctk.CTkFrame):
         self.volume_slider.pack(side="right", padx=10)
 
         self.root.bind("<KeyPress>", self.on_key)
+        self.root.bind("<MouseWheel>", self.on_mouse_wheel)
+        self.video_frame.bind("<MouseWheel>", self.on_mouse_wheel)
+        controls.bind("<MouseWheel>", self.on_mouse_wheel)
         self.after(150, lambda: self.root.focus_set())
 
     def setup_video(self):
         handle = self.video_frame.winfo_id()
         self._manager.attach_window(handle)
+        self._manager.player.video_set_mouse_input(False)
 
     def open_media(self):
         path = filedialog.askopenfilename(
@@ -70,7 +77,6 @@ class TabLecteur(ctk.CTkFrame):
         )
         if path:
             self.media_path = path
-            # Extrait le nom du fichier et met à jour le texte du bouton
             nom_fichier = os.path.basename(path)
             self.btn_media.configure(text=nom_fichier)
             self.reload_media()
@@ -79,7 +85,6 @@ class TabLecteur(ctk.CTkFrame):
         path = filedialog.askopenfilename(filetypes=[("ASS subtitles", "*.ass")])
         if path:
             self.subtitle_path = path
-            # Extrait le nom du fichier et met à jour le texte du bouton
             nom_fichier = os.path.basename(path)
             self.btn_subtitles.configure(text=nom_fichier)
             self.reload_media()
@@ -101,7 +106,6 @@ class TabLecteur(ctk.CTkFrame):
             print("Erreur d'extraction :", e)
             pass
 
-        # S'il n'y a pas d'image dans le MP3, on génère un fond noir
         img = Image.new("RGB", (1920, 1080), color="black")
         img.save(cover_path)
         return cover_path, duration
@@ -142,7 +146,6 @@ class TabLecteur(ctk.CTkFrame):
             self._manager.player.set_time(max(0, current + offset_ms))
 
     def force_subtitle_refresh(self):
-        """Force VLC à recalculer le rendu des sous-titres sur la position actuelle"""
         current_spu = self._manager.player.video_get_spu()
         self._manager.player.video_set_spu(-1)
         self._manager.player.video_set_spu(current_spu)
@@ -178,3 +181,9 @@ class TabLecteur(ctk.CTkFrame):
             self.adjust_subtitle_delay(-100)
         elif key == "h":
             self.adjust_subtitle_delay(100)
+
+    def on_mouse_wheel(self, event):
+        if event.delta > 0:
+            self.change_volume(1)
+        elif event.delta < 0:
+            self.change_volume(-1)

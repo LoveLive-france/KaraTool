@@ -15,17 +15,9 @@ class TabTelechargeur(ctk.CTkFrame):
     def _build(self):
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
-        self._build_header()
         self._build_barre_saisie()
         self._build_liste()
         self._build_pied_de_page()
-
-    def _build_header(self):
-        header = ctk.CTkFrame(self, height=70)
-        header.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
-        ctk.CTkLabel(
-            header, text="YouTube Downloader", font=("Arial", 24, "bold")
-        ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
     def _build_barre_saisie(self):
         frame = ctk.CTkFrame(self)
@@ -202,5 +194,5 @@ class TabTelechargeur(ctk.CTkFrame):
             self._label_cookies.configure(text="● Cookies: chargés", text_color="green")
         else:
             self._label_cookies.configure(
-                text="● Cookies: non chargés", text_color="red"
+                text="",
             )
