@@ -1,3 +1,4 @@
+import os
 import customtkinter as ctk
 from tkinter import filedialog
 from core.download_manager import DownloadManager
@@ -14,17 +15,9 @@ class TabTelechargeur(ctk.CTkFrame):
     def _build(self):
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
-        self._build_header()
         self._build_barre_saisie()
         self._build_liste()
         self._build_pied_de_page()
-
-    def _build_header(self):
-        header = ctk.CTkFrame(self, height=70)
-        header.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
-        ctk.CTkLabel(
-            header, text="YouTube Downloader", font=("Arial", 24, "bold")
-        ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
     def _build_barre_saisie(self):
         frame = ctk.CTkFrame(self)
@@ -61,9 +54,6 @@ class TabTelechargeur(ctk.CTkFrame):
         ctk.CTkButton(pied, text="Ajouter", command=self._on_ajouter_lien).pack(
             side="left", padx=10
         )
-        ctk.CTkButton(pied, text="Dossier", command=self._on_choisir_dossier).pack(
-            side="left", padx=10
-        )
         ctk.CTkButton(pied, text="Cookies", command=self._on_choisir_cookies).pack(
             side="left", padx=10
         )
@@ -75,27 +65,75 @@ class TabTelechargeur(ctk.CTkFrame):
         ).pack(side="right", padx=10)
 
         self._label_cookies = ctk.CTkLabel(pied, text="", font=("Arial", 14, "bold"))
-        self._label_cookies.pack(side="right", padx=10)
+        self._label_cookies.pack(side="left", padx=10)
 
     def _creer_carte(self, item_id, url):
         carte = ctk.CTkFrame(self._frame_liste, corner_radius=12)
         carte.pack(fill="x", padx=10, pady=8)
 
-        colonne_gauche = ctk.CTkFrame(carte)
+        ctk.CTkButton(
+            carte,
+            text="Retirer",
+            width=70,
+            fg_color="#A83232",
+            hover_color="#7A2222",
+            command=lambda: self._supprimer_carte(item_id),
+        ).pack(side="left", padx=10, pady=10)
+
+        btn_dossier = ctk.CTkButton(
+            carte,
+            text="📁 Dossier",
+            width=100,
+            command=lambda: self._on_choisir_dossier_carte(item_id),
+        )
+        btn_dossier.pack(side="left", padx=5, pady=10)
+
+        colonne_gauche = ctk.CTkFrame(carte, fg_color="transparent")
         colonne_gauche.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
         ctk.CTkLabel(colonne_gauche, text=url, anchor="w").pack(fill="x")
+
+        label_dossier = ctk.CTkLabel(
+            colonne_gauche,
+            text="Dossier : Par défaut",
+            font=("Arial", 11, "italic"),
+            text_color="gray",
+        )
+        label_dossier.pack(anchor="w")
+
         label_statut = ctk.CTkLabel(colonne_gauche, text="⏳ En attente")
-        label_statut.pack(anchor="w", pady=5)
+        label_statut.pack(anchor="w", pady=2)
 
         barre_progression = ctk.CTkProgressBar(carte, width=150)
         barre_progression.pack(side="right", padx=10)
         barre_progression.set(0)
 
         self._cartes[item_id] = {
+            "widget": carte,
             "statut": label_statut,
             "progression": barre_progression,
+            "label_dossier": label_dossier,
+            "btn_dossier": btn_dossier,
+            "dossier_cible": None,
         }
+
+    def _on_choisir_dossier_carte(self, item_id):
+        dossier = filedialog.askdirectory()
+        if dossier:
+            self._cartes[item_id]["dossier_cible"] = dossier
+
+            nom_dossier = (
+                os.path.basename(dossier) if os.path.basename(dossier) else dossier
+            )
+            self._cartes[item_id]["label_dossier"].configure(
+                text=f"Dossier : .../{nom_dossier}", text_color="white"
+            )
+
+    def _supprimer_carte(self, item_id):
+        donnees_carte = self._cartes.get(item_id)
+        if donnees_carte:
+            donnees_carte["widget"].destroy()
+            del self._cartes[item_id]
 
     def _mettre_a_jour_carte(self, item_id, statut, progression):
         carte = self._cartes.get(item_id)
@@ -129,11 +167,6 @@ class TabTelechargeur(ctk.CTkFrame):
         self._creer_carte(item_id, url)
         self._entree_url.delete(0, "end")
 
-    def _on_choisir_dossier(self):
-        dossier = filedialog.askdirectory()
-        if dossier:
-            self._manager.set_folder(dossier)
-
     def _on_choisir_cookies(self):
         chemin = filedialog.askopenfilename(filetypes=[("Cookies", "*.txt")])
         if chemin:
@@ -145,6 +178,15 @@ class TabTelechargeur(ctk.CTkFrame):
         self._refresh_label_cookies()
 
     def _on_lancer_telechargement(self):
+        for item_id, infos in self._cartes.items():
+            if infos["dossier_cible"]:
+                try:
+                    self._manager.set_folder_for_item(item_id, infos["dossier_cible"])
+                except AttributeError:
+                    print(
+                        f"Erreur : Ton DownloadManager n'a pas de méthode pour attribuer un dossier à l'item {item_id}"
+                    )
+
         self._manager.start()
 
     def _refresh_label_cookies(self):
@@ -152,5 +194,5 @@ class TabTelechargeur(ctk.CTkFrame):
             self._label_cookies.configure(text="● Cookies: chargés", text_color="green")
         else:
             self._label_cookies.configure(
-                text="● Cookies: non chargés", text_color="red"
+                text="",
             )
