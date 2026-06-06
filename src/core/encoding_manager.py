@@ -3,6 +3,7 @@ import sys
 import threading
 import subprocess
 import json
+from collections import deque
 
 
 def get_ffmpeg_path():
@@ -11,20 +12,17 @@ def get_ffmpeg_path():
     return os.getcwd()
 
 
-def encode_media(  # Renommé en encode_media pour la cohérence
+def encode_media(
     input_file,
     output_file,
     video_bitrate=4000,
     audio_bitrate=256,
     progress_callback=None,
 ):
-    # 1. Détection du type de fichier (Audio ou Vidéo)
     ext = os.path.splitext(input_file)[1].lower()
     is_audio = ext in [".mp3", ".wav", ".flac", ".m4a", ".ogg"]
 
     if is_audio:
-        # Encodage AUDIO : On force le codec MP3 en débit CONSTANT (CBR)
-        # On utilise 320k par défaut pour une qualité maximale indispensable au karaoké
         bitrate_cbr = f"{audio_bitrate}k" if audio_bitrate else "320k"
         cmd = [
             "ffmpeg",
@@ -32,12 +30,11 @@ def encode_media(  # Renommé en encode_media pour la cohérence
             "-i",
             input_file,
             "-c:a",
-            "libmp3lame",
+            "opus",
             "-b:a",
             bitrate_cbr,
         ]
     else:
-        # Encodage VIDÉO : On garde exactement ton paramétrage initial x265
         audio_copy = has_opus_audio(input_file)
         cmd = [
             "ffmpeg",
@@ -60,7 +57,7 @@ def encode_media(  # Renommé en encode_media pour la cohérence
         if audio_copy:
             cmd += ["-c:a", "copy"]
         else:
-            cmd += ["-c:a", "aac", "-b:a", f"{audio_bitrate}k"]
+            cmd += ["-c:a", "libopus", "-b:a", f"{audio_bitrate}k"]
 
     cmd.append(output_file)
 
@@ -68,15 +65,26 @@ def encode_media(  # Renommé en encode_media pour la cohérence
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1
     )
 
+    error_log = deque(maxlen=5)
+
     while True:
         line = process.stderr.readline()
         if not line:
             break
 
+        clean_line = line.strip()
+        if clean_line:
+            error_log.append(clean_line)
+
         if "time=" in line and progress_callback:
             progress_callback(line)
 
     process.wait()
+
+    if process.returncode != 0:
+        detail_erreur = " | ".join(error_log) if error_log else "Erreur inconnue"
+        raise RuntimeError(f"FFmpeg crash: {detail_erreur}")
+
     return process.returncode
 
 
@@ -145,18 +153,16 @@ class EncodingManager:
                 self.on_update(item_id, "🔄 Encodage...", None)
 
             try:
-                code = encode_media(
+                encode_media(
                     input_file=input_file,
                     output_file=output_file,
                     video_bitrate=self.video_bitrate,
                     audio_bitrate=self.audio_bitrate,
                     progress_callback=progress,
                 )
+                self.on_update(item_id, "✔️ Terminé", (i + 1) / total)
 
-                if code == 0:
-                    self.on_update(item_id, "✔️ Terminé", (i + 1) / total)
-                else:
-                    self.on_update(item_id, "❌ Erreur FFmpeg", i / total)
-
+            except RuntimeError as re:
+                self.on_update(item_id, f"❌ {str(re)}", i / total)
             except Exception as e:
-                self.on_update(item_id, f"❌ Exception: {e}", i / total)
+                self.on_update(item_id, f"❌ Exception: {str(e)}", i / total)

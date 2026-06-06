@@ -10,10 +10,12 @@ _FORMAT_PAR_QUALITE = {
     "480p": "bestvideo[height<=480]+bestaudio[ext=m4a]/best[height<=480]",
 }
 
+
 def get_ffmpeg_path():
     if getattr(sys, "frozen", False):
         return sys._MEIPASS
     return os.getcwd()
+
 
 def build_ydl_opts(
     url,
@@ -57,9 +59,11 @@ def build_ydl_opts(
         )
     return options_telechargement
 
+
 def telecharger_avec_ydl(url: str, options: dict) -> None:
     with YoutubeDL(options) as ydl:
         ydl.download([url])
+
 
 class DownloadManager:
     def __init__(self, on_update, telecharger=telecharger_avec_ydl):
@@ -108,7 +112,7 @@ class DownloadManager:
             format_media = telechargement["format_media"]
             qualite_video = telechargement["qualite_video"]
             identifiant_item = telechargement["id"]
-            
+
             # MODIFICATION : On utilise le dossier spécifique s'il existe, sinon le global
             dossier_final = telechargement["dossier_custom"] or self.dossier_destination
 
@@ -132,7 +136,7 @@ class DownloadManager:
             options_telechargement = build_ydl_opts(
                 url,
                 format_media,
-                dossier_final, 
+                dossier_final,
                 self.cookies_file,
                 rappel_progression,
                 qualite_video,

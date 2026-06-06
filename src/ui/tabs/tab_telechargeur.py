@@ -85,14 +85,14 @@ class TabTelechargeur(ctk.CTkFrame):
             width=70,
             fg_color="#A83232",
             hover_color="#7A2222",
-            command=lambda: self._supprimer_carte(item_id)
+            command=lambda: self._supprimer_carte(item_id),
         ).pack(side="left", padx=10, pady=10)
 
         btn_dossier = ctk.CTkButton(
             carte,
             text="📁 Dossier",
             width=100,
-            command=lambda: self._on_choisir_dossier_carte(item_id)
+            command=lambda: self._on_choisir_dossier_carte(item_id),
         )
         btn_dossier.pack(side="left", padx=5, pady=10)
 
@@ -100,8 +100,13 @@ class TabTelechargeur(ctk.CTkFrame):
         colonne_gauche.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
         ctk.CTkLabel(colonne_gauche, text=url, anchor="w").pack(fill="x")
-        
-        label_dossier = ctk.CTkLabel(colonne_gauche, text="Dossier : Par défaut", font=("Arial", 11, "italic"), text_color="gray")
+
+        label_dossier = ctk.CTkLabel(
+            colonne_gauche,
+            text="Dossier : Par défaut",
+            font=("Arial", 11, "italic"),
+            text_color="gray",
+        )
         label_dossier.pack(anchor="w")
 
         label_statut = ctk.CTkLabel(colonne_gauche, text="⏳ En attente")
@@ -117,16 +122,20 @@ class TabTelechargeur(ctk.CTkFrame):
             "progression": barre_progression,
             "label_dossier": label_dossier,
             "btn_dossier": btn_dossier,
-            "dossier_cible": None
+            "dossier_cible": None,
         }
 
     def _on_choisir_dossier_carte(self, item_id):
         dossier = filedialog.askdirectory()
         if dossier:
             self._cartes[item_id]["dossier_cible"] = dossier
-            
-            nom_dossier = os.path.basename(dossier) if os.path.basename(dossier) else dossier
-            self._cartes[item_id]["label_dossier"].configure(text=f"Dossier : .../{nom_dossier}", text_color="white")
+
+            nom_dossier = (
+                os.path.basename(dossier) if os.path.basename(dossier) else dossier
+            )
+            self._cartes[item_id]["label_dossier"].configure(
+                text=f"Dossier : .../{nom_dossier}", text_color="white"
+            )
 
     def _supprimer_carte(self, item_id):
         donnees_carte = self._cartes.get(item_id)
@@ -182,7 +191,9 @@ class TabTelechargeur(ctk.CTkFrame):
                 try:
                     self._manager.set_folder_for_item(item_id, infos["dossier_cible"])
                 except AttributeError:
-                    print(f"Erreur : Ton DownloadManager n'a pas de méthode pour attribuer un dossier à l'item {item_id}")
+                    print(
+                        f"Erreur : Ton DownloadManager n'a pas de méthode pour attribuer un dossier à l'item {item_id}"
+                    )
 
         self._manager.start()
 

@@ -11,6 +11,7 @@ from PIL import Image
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
+
 class TabLecteur(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -26,18 +27,30 @@ class TabLecteur(ctk.CTkFrame):
         controls = ctk.CTkFrame(self)
         controls.pack(fill="x", padx=10, pady=10)
 
-        ctk.CTkButton(controls, text="Lecture", command=self._manager.play).pack(side="left", padx=5)
-        ctk.CTkButton(controls, text="Pause", command=self._manager.pause).pack(side="left", padx=5)
-        ctk.CTkButton(controls, text="Stop", command=self._manager.stop).pack(side="left", padx=5)
+        ctk.CTkButton(controls, text="Lecture", command=self._manager.play).pack(
+            side="left", padx=5
+        )
+        ctk.CTkButton(controls, text="Pause", command=self._manager.pause).pack(
+            side="left", padx=5
+        )
+        ctk.CTkButton(controls, text="Stop", command=self._manager.stop).pack(
+            side="left", padx=5
+        )
 
         # Ajout d'une référence d'instance (self.) pour pouvoir modifier le texte plus tard
-        self.btn_media = ctk.CTkButton(controls, text="Ouvrir média", command=self.open_media)
+        self.btn_media = ctk.CTkButton(
+            controls, text="Ouvrir média", command=self.open_media
+        )
         self.btn_media.pack(side="left", padx=10)
 
-        self.btn_subtitles = ctk.CTkButton(controls, text="Sous-titres", command=self.open_subtitles)
+        self.btn_subtitles = ctk.CTkButton(
+            controls, text="Sous-titres", command=self.open_subtitles
+        )
         self.btn_subtitles.pack(side="left", padx=10)
 
-        self.volume_slider = ctk.CTkSlider(controls, from_=0, to=100, command=self.set_volume)
+        self.volume_slider = ctk.CTkSlider(
+            controls, from_=0, to=100, command=self.set_volume
+        )
         self.volume_slider.set(80)
         self.volume_slider.pack(side="right", padx=10)
 
