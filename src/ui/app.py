@@ -16,6 +16,7 @@ class App(ctk.CTk):
         super().__init__()
         try:
             from version import __version__
+
             self._version = __version__
         except ImportError:
             self._version = None
@@ -25,7 +26,7 @@ class App(ctk.CTk):
 
         self._sidebar_visible = True
         self.frames = {}
-        
+
         # Dictionnaire qui mappe les noms des frames à leurs classes
         self.frame_classes = {
             "Téléchargeur": TabTelechargeur,
@@ -34,7 +35,7 @@ class App(ctk.CTk):
             "Cover Audio": TabCoverAudio,
             "Lecteur": TabLecteur,
         }
-        
+
         self.current_frame_name = None
 
         self._build_ui()

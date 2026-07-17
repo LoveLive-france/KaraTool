@@ -28,7 +28,9 @@ class TabTelechargeur(ctk.CTkFrame):
         self._entree_url = ctk.CTkEntry(frame, placeholder_text="Lien de la vidéo")
         self._entree_url.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
-        self._entree_nom = ctk.CTkEntry(frame, placeholder_text="Nom personnalisé (optionnel)")
+        self._entree_nom = ctk.CTkEntry(
+            frame, placeholder_text="Nom personnalisé (optionnel)"
+        )
         self._entree_nom.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
 
         self._format_selectionne = ctk.StringVar(value="Vidéo")
@@ -55,41 +57,74 @@ class TabTelechargeur(ctk.CTkFrame):
         # On utilise fg_color="transparent" pour que les sous-frames se fondent dans le fond
         pied = ctk.CTkFrame(self, fg_color="transparent")
         pied.grid(row=3, column=0, sticky="ew", padx=10, pady=10)
-        
-        # Configuration des colonnes du pied de page pour bien espacer les éléments
-        pied.grid_columnconfigure(0, weight=0) # Zone Ajouter
-        pied.grid_columnconfigure(1, weight=0) # Zone Dossier
-        pied.grid_columnconfigure(2, weight=0) # Zone Cookies
-        pied.grid_columnconfigure(3, weight=1) # Espace vide au milieu pour pousser "Télécharger" à droite
-        pied.grid_columnconfigure(4, weight=0) # Zone Télécharger
 
-        ctk.CTkButton(pied, text="Ajouter", command=self._on_ajouter_lien).grid(row=0, column=0, padx=10, sticky="n")
+        # Configuration des colonnes du pied de page pour bien espacer les éléments
+        pied.grid_columnconfigure(0, weight=0)  # Zone Ajouter
+        pied.grid_columnconfigure(1, weight=0)  # Zone Dossier
+        pied.grid_columnconfigure(2, weight=0)  # Zone Cookies
+        pied.grid_columnconfigure(
+            3, weight=1
+        )  # Espace vide au milieu pour pousser "Télécharger" à droite
+        pied.grid_columnconfigure(4, weight=0)  # Zone Télécharger
+
+        ctk.CTkButton(pied, text="Ajouter", command=self._on_ajouter_lien).grid(
+            row=0, column=0, padx=10, sticky="n"
+        )
 
         zone_dossier = ctk.CTkFrame(pied, fg_color="transparent")
         zone_dossier.grid(row=0, column=1, padx=10, sticky="n")
-        
-        ctk.CTkButton(zone_dossier, text="Dossier par défaut", command=self._on_choisir_dossier_defaut).pack()
-        
-        dossier_actuel = os.path.basename(self._manager.dossier_destination) or self._manager.dossier_destination
-        self._label_dossier_defaut = ctk.CTkLabel(zone_dossier, text=f"Actuel : {dossier_actuel}", font=("Arial", 11, "italic"), text_color="gray")
-        self._label_dossier_defaut.pack(pady=(2, 0)) # Marge de 2 pixels en haut pour décoller du bouton
+
+        ctk.CTkButton(
+            zone_dossier,
+            text="Dossier par défaut",
+            command=self._on_choisir_dossier_defaut,
+        ).pack()
+
+        dossier_actuel = (
+            os.path.basename(self._manager.dossier_destination)
+            or self._manager.dossier_destination
+        )
+        self._label_dossier_defaut = ctk.CTkLabel(
+            zone_dossier,
+            text=f"Actuel : {dossier_actuel}",
+            font=("Arial", 11, "italic"),
+            text_color="gray",
+        )
+        self._label_dossier_defaut.pack(
+            pady=(2, 0)
+        )  # Marge de 2 pixels en haut pour décoller du bouton
 
         zone_cookies = ctk.CTkFrame(pied, fg_color="transparent")
         zone_cookies.grid(row=0, column=2, padx=10, sticky="n")
-        
+
         ligne_boutons_cookies = ctk.CTkFrame(zone_cookies, fg_color="transparent")
         ligne_boutons_cookies.pack()
-        
-        ctk.CTkButton(ligne_boutons_cookies, text="Cookies", command=self._on_choisir_cookies, width=90).pack(side="left", padx=(0, 5))
-        
-        self._btn_vider_cookies = ctk.CTkButton(ligne_boutons_cookies, text="Vider", command=self._on_vider_cookies, width=50, state="disabled")
+
+        ctk.CTkButton(
+            ligne_boutons_cookies,
+            text="Cookies",
+            command=self._on_choisir_cookies,
+            width=90,
+        ).pack(side="left", padx=(0, 5))
+
+        self._btn_vider_cookies = ctk.CTkButton(
+            ligne_boutons_cookies,
+            text="Vider",
+            command=self._on_vider_cookies,
+            width=50,
+            state="disabled",
+        )
         self._btn_vider_cookies.pack(side="left")
 
-        self._label_cookies = ctk.CTkLabel(zone_cookies, text="", font=("Arial", 11, "bold"))
+        self._label_cookies = ctk.CTkLabel(
+            zone_cookies, text="", font=("Arial", 11, "bold")
+        )
         self._label_cookies.pack(pady=(2, 0))
 
         # --- 4. BOUTON TÉLÉCHARGER TOUT ---
-        ctk.CTkButton(pied, text="Télécharger tout", command=self._on_lancer_telechargement).grid(row=0, column=4, padx=10, sticky="n")
+        ctk.CTkButton(
+            pied, text="Télécharger tout", command=self._on_lancer_telechargement
+        ).grid(row=0, column=4, padx=10, sticky="n")
 
     def _creer_carte(self, item_id, url, nom_custom):
         carte = ctk.CTkFrame(self._frame_liste, corner_radius=12)
@@ -115,9 +150,13 @@ class TabTelechargeur(ctk.CTkFrame):
         colonne_gauche = ctk.CTkFrame(carte, fg_color="transparent")
         colonne_gauche.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
-        ctk.CTkLabel(colonne_gauche, text=url, anchor="w", font=("Arial", 10), text_color="gray").pack(fill="x")
+        ctk.CTkLabel(
+            colonne_gauche, text=url, anchor="w", font=("Arial", 10), text_color="gray"
+        ).pack(fill="x")
 
-        entree_nom_carte = ctk.CTkEntry(colonne_gauche, placeholder_text="Nom du fichier (optionnel)")
+        entree_nom_carte = ctk.CTkEntry(
+            colonne_gauche, placeholder_text="Nom du fichier (optionnel)"
+        )
         entree_nom_carte.pack(fill="x", pady=2)
         if nom_custom:
             entree_nom_carte.insert(0, nom_custom)
@@ -144,21 +183,25 @@ class TabTelechargeur(ctk.CTkFrame):
             "label_dossier": label_dossier,
             "btn_dossier": btn_dossier,
             "dossier_cible": None,
-            "entree_nom": entree_nom_carte, 
+            "entree_nom": entree_nom_carte,
         }
 
     def _on_choisir_dossier_defaut(self):
         dossier = filedialog.askdirectory()
         if dossier:
             self._manager.set_folder(dossier)
-            nom_dossier = os.path.basename(dossier) if os.path.basename(dossier) else dossier
+            nom_dossier = (
+                os.path.basename(dossier) if os.path.basename(dossier) else dossier
+            )
             self._label_dossier_defaut.configure(text=f"Actuel : {nom_dossier}")
 
     def _on_choisir_dossier_carte(self, item_id):
         dossier = filedialog.askdirectory()
         if dossier:
             self._cartes[item_id]["dossier_cible"] = dossier
-            nom_dossier = os.path.basename(dossier) if os.path.basename(dossier) else dossier
+            nom_dossier = (
+                os.path.basename(dossier) if os.path.basename(dossier) else dossier
+            )
             self._cartes[item_id]["label_dossier"].configure(
                 text=f"Dossier : .../{nom_dossier}", text_color="white"
             )
@@ -168,7 +211,9 @@ class TabTelechargeur(ctk.CTkFrame):
         if donnees_carte:
             donnees_carte["widget"].destroy()
             del self._cartes[item_id]
-            self._manager.remove(item_id) # On supprime du gestionnaire comme vu précédemment
+            self._manager.remove(
+                item_id
+            )  # On supprime du gestionnaire comme vu précédemment
 
     def _mettre_a_jour_carte(self, item_id, statut, progression):
         carte = self._cartes.get(item_id)
@@ -197,15 +242,15 @@ class TabTelechargeur(ctk.CTkFrame):
         nom_custom = self._entree_nom.get().strip()
         if not url:
             return
-            
+
         item_id = self._manager.add(
-            url, 
-            self._format_selectionne.get(), 
+            url,
+            self._format_selectionne.get(),
             self._qualite_selectionnee.get(),
-            nom_custom if nom_custom else None
+            nom_custom if nom_custom else None,
         )
         self._creer_carte(item_id, url, nom_custom)
-        
+
         self._entree_url.delete(0, "end")
         self._entree_nom.delete(0, "end")
 
@@ -235,7 +280,11 @@ class TabTelechargeur(ctk.CTkFrame):
     def _refresh_label_cookies(self):
         if self._manager.cookies_file:
             self._label_cookies.configure(text="● Chargés", text_color="green")
-            self._btn_vider_cookies.configure(state="normal") # Active le bouton "Vider"
+            self._btn_vider_cookies.configure(
+                state="normal"
+            )  # Active le bouton "Vider"
         else:
             self._label_cookies.configure(text="○ Non chargés", text_color="gray")
-            self._btn_vider_cookies.configure(state="disabled") # Désactive le bouton "Vider"
+            self._btn_vider_cookies.configure(
+                state="disabled"
+            )  # Désactive le bouton "Vider"

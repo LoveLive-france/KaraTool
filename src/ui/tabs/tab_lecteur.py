@@ -13,6 +13,7 @@ from pynput import mouse  # Ajout de pynput pour le scroll
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
+
 class TabLecteur(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -34,16 +35,28 @@ class TabLecteur(ctk.CTkFrame):
 
         icon_font = ctk.CTkFont(family="Courier New", size=22, weight="bold")
         ctk.CTkButton(
-            self.controls, text="►", font=icon_font, width=40, command=self._manager.play
+            self.controls,
+            text="►",
+            font=icon_font,
+            width=40,
+            command=self._manager.play,
         ).pack(side="left", padx=5)
 
         pause_font = ctk.CTkFont(family="Arial", size=20, weight="bold")
         ctk.CTkButton(
-            self.controls, text="l l", font=pause_font, width=40, command=self._manager.pause
+            self.controls,
+            text="l l",
+            font=pause_font,
+            width=40,
+            command=self._manager.pause,
         ).pack(side="left", padx=5)
 
         ctk.CTkButton(
-            self.controls, text="■", font=icon_font, width=40, command=self._manager.stop
+            self.controls,
+            text="■",
+            font=icon_font,
+            width=40,
+            command=self._manager.stop,
         ).pack(side="left", padx=5)
 
         self.btn_media = ctk.CTkButton(
@@ -71,13 +84,13 @@ class TabLecteur(ctk.CTkFrame):
         self.root.bind("<KeyPress>", self.on_key)
         self.root.bind("<MouseWheel>", self.on_mouse_wheel)
         self.root.bind_all("<MouseWheel>", self.on_mouse_wheel)
-        
+
         self.after(150, lambda: self.root.focus_set())
 
         # --- DÉMARRAGE DE PYNPUT POUR LE SCROLL SUR LA VIDÉO ---
         self.mouse_listener = mouse.Listener(on_scroll=self._on_global_scroll)
         self.mouse_listener.start()
-        
+
         # Arrêter le listener proprement si on détruit le widget
         self.bind("<Destroy>", lambda e: self.mouse_listener.stop())
 
@@ -192,46 +205,46 @@ class TabLecteur(ctk.CTkFrame):
         """Entrer en mode fullscreen VLC-like"""
         self.is_fullscreen = True
         handle = self.video_frame.winfo_id()
-        
+
         # Masquer l'interface de l'app
         self.controls.pack_forget()
-        
+
         # Créer fenêtre fullscreen noire
         self.fs_window = ctk.CTkToplevel(self.root)
         self.fs_window.attributes("-fullscreen", True)
         self.fs_window.configure(fg_color="black")
-        
+
         # Renommer la fenêtre (utile pour Alt+Tab)
         if self.media_path:
             nom_video = os.path.basename(self.media_path)
             self.fs_window.title(f"{nom_video} - Plein écran")
         else:
             self.fs_window.title("Lecteur - Plein écran")
-            
+
         self.fs_window.bind("<KeyPress>", self.on_key)
         self.fs_window.bind("<Double-Button-1>", self.toggle_fullscreen)
         self.fs_window.bind("<Escape>", lambda e: self._exit_fullscreen())
         self.fs_window.bind("<Button-1>", self.toggle_fullscreen)
-        
+
         self.fs_window.update()
-        
+
         # Sauvegarder le vrai parent natif
         self.original_handle_parent = ctypes.windll.user32.GetParent(handle)
-        
+
         try:
             # Reparenter la vidéo dans la fenêtre fullscreen
             ctypes.windll.user32.SetParent(handle, self.fs_window.winfo_id())
-            
+
             # Cacher l'application principale
             self.root.withdraw()
-            
+
             # Forcer l'affichage de la vidéo (évite l'écran noir) et la redimensionner
             w = self.fs_window.winfo_screenwidth()
             h = self.fs_window.winfo_screenheight()
-            
+
             ctypes.windll.user32.ShowWindow(handle, 5)  # 5 = SW_SHOW
             ctypes.windll.user32.MoveWindow(handle, 0, 0, w, h, True)
-            
+
             self.fs_window.focus_set()
         except Exception as e:
             print(f"Erreur fullscreen: {e}")
@@ -245,50 +258,52 @@ class TabLecteur(ctk.CTkFrame):
         """Quitter le mode fullscreen"""
         if not self.is_fullscreen:
             return
-            
+
         self.is_fullscreen = False
         handle = self.video_frame.winfo_id()
-        
+
         try:
             # 1. Faire réapparaître l'application en premier
             self.root.deiconify()
             self.controls.pack(fill="x", padx=10, pady=10)
-            
+
             # 2. Restaurer le parent d'origine de la vidéo
             if self.original_handle_parent:
                 ctypes.windll.user32.SetParent(handle, self.original_handle_parent)
-            
+
             self.update_idletasks()
             self.video_frame.update_idletasks()
-            
+
             # 3. Récupérer les dimensions du conteneur Tkinter
             video_x = self.video_frame.winfo_x()
             video_y = self.video_frame.winfo_y()
             video_w = self.video_frame.winfo_width()
             video_h = self.video_frame.winfo_height()
-            
+
             # 4. Fonction pour repositionner et forcer la visibilité
             def restore_video_view():
-                ctypes.windll.user32.MoveWindow(handle, video_x, video_y, video_w, video_h, True)
+                ctypes.windll.user32.MoveWindow(
+                    handle, video_x, video_y, video_w, video_h, True
+                )
                 ctypes.windll.user32.ShowWindow(handle, 5)
-            
+
             if video_w > 0 and video_h > 0:
                 self.after(50, restore_video_view)
-            
+
             # 5. Détruire la fenêtre fullscreen
             if hasattr(self, "fs_window") and self.fs_window:
                 try:
                     self.fs_window.destroy()
-                except:
+                except Exception:
                     pass
                 self.fs_window = None
-            
+
             # 6. Réattacher VLC
             self._manager._appliquer_attach_window(handle)
-            
+
         except Exception as e:
             print(f"Erreur exit fullscreen: {e}")
-            self.root.deiconify() 
+            self.root.deiconify()
         finally:
             self.root.focus_set()
 
@@ -323,7 +338,7 @@ class TabLecteur(ctk.CTkFrame):
         # On ignore si on est en fullscreen (pynput s'en occupe)
         if self.is_fullscreen:
             return
-            
+
         if event.delta > 0:
             self.change_volume(5)
         elif event.delta < 0:
@@ -331,15 +346,19 @@ class TabLecteur(ctk.CTkFrame):
 
     def _on_global_scroll(self, x, y, dx, dy):
         """Gérer la molette de la souris au-dessus de la vidéo (via pynput)"""
-        target = self.fs_window if self.is_fullscreen and self.fs_window else self.video_frame
-        
+        target = (
+            self.fs_window
+            if self.is_fullscreen and self.fs_window
+            else self.video_frame
+        )
+
         if target and target.winfo_exists() and target.winfo_viewable():
             try:
                 wx = target.winfo_rootx()
                 wy = target.winfo_rooty()
                 ww = target.winfo_width()
                 wh = target.winfo_height()
-                
+
                 # Vérifier si le curseur est dans la zone de la vidéo
                 if wx <= x <= (wx + ww) and wy <= y <= (wy + wh):
                     # Déléguer l'exécution au thread de Tkinter pour éviter les blocages
@@ -348,4 +367,4 @@ class TabLecteur(ctk.CTkFrame):
                     elif dy < 0:
                         self.after(0, lambda: self.change_volume(-5))
             except Exception:
-                pass # Évite les crashs si Tkinter est en cours de redimensionnement
+                pass  # Évite les crashs si Tkinter est en cours de redimensionnement

@@ -10,10 +10,12 @@ _FORMAT_PAR_QUALITE = {
     "480p": "bestvideo[height<=480]+bestaudio[ext=m4a]/best[height<=480]",
 }
 
+
 def get_ffmpeg_path():
     if getattr(sys, "frozen", False):
         return sys._MEIPASS
     return os.getcwd()
+
 
 def build_ydl_opts(
     url,
@@ -24,7 +26,9 @@ def build_ydl_opts(
     qualite_video="Meilleure",
     nom_custom=None,
 ):
-    nom_fichier_template = f"{nom_custom}.%(ext)s" if nom_custom else "%(title)s.%(ext)s"
+    nom_fichier_template = (
+        f"{nom_custom}.%(ext)s" if nom_custom else "%(title)s.%(ext)s"
+    )
 
     options_telechargement = {
         "outtmpl": os.path.join(dossier_destination, nom_fichier_template),
@@ -60,9 +64,11 @@ def build_ydl_opts(
         )
     return options_telechargement
 
+
 def telecharger_avec_ydl(url: str, options: dict) -> None:
     with YoutubeDL(options) as ydl:
         ydl.download([url])
+
 
 class DownloadManager:
     def __init__(self, on_update, telecharger=telecharger_avec_ydl):
@@ -107,9 +113,11 @@ class DownloadManager:
             }
         )
         return identifiant_item
-    
+
     def remove(self, item_id):
-        self._telechargements = [dl for dl in self._telechargements if dl["id"] != item_id]
+        self._telechargements = [
+            dl for dl in self._telechargements if dl["id"] != item_id
+        ]
 
     def start(self):
         threading.Thread(target=self._run_all, daemon=True).start()
