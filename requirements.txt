@@ -10,3 +10,4 @@ requests
 Pillow
 mutagen
 python-vlc
+pynput
