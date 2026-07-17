@@ -3,7 +3,6 @@ from pathlib import Path
 import sys
 from tkinter import messagebox
 import winreg
-import vlc
 
 
 class PlayerManager:
@@ -59,6 +58,8 @@ class PlayerManager:
             self._declencher_erreur_vlc()
 
         PlayerManager.vlc_trouve = True
+
+        import vlc
 
         self.instance = vlc.Instance(
             "--no-video-title-show", "--input-fast-seek", "--clock-jitter=0"
