@@ -27,6 +27,17 @@ class App(ctk.CTk):
         self._sidebar_visible = True
         self.frames = {}
 
+        # Dictionnaire qui mappe les noms des frames à leurs classes
+        self.frame_classes = {
+            "Téléchargeur": TabTelechargeur,
+            "Formattage Kara": TabTexteJaponais,
+            "Réencodage": TabEncodeur,
+            "Cover Audio": TabCoverAudio,
+            "Lecteur": TabLecteur,
+        }
+
+        self.current_frame_name = None
+
         self._build_ui()
 
         if self._version:
@@ -79,20 +90,8 @@ class App(ctk.CTk):
         )
         self.content_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=(0, 10))
 
-        self.frames["Téléchargeur"] = TabTelechargeur(self.content_frame)
-        self.frames["Formattage Kara"] = TabTexteJaponais(self.content_frame)
-        self.frames["Réencodage"] = TabEncodeur(self.content_frame)
-        self.frames["Cover Audio"] = TabCoverAudio(self.content_frame)
-        self.frames["Lecteur"] = TabLecteur(self.content_frame)
-
-        boutons_menu = [
-            "Téléchargeur",
-            "Formattage Kara",
-            "Réencodage",
-            "Cover Audio",
-            "Lecteur",
-        ]
-        for i, nom in enumerate(boutons_menu, start=1):
+        # Créer les boutons du menu SANS créer les frames
+        for i, nom in enumerate(self.frame_classes.keys(), start=1):
             btn = ctk.CTkButton(
                 self.sidebar_frame,
                 text=nom,
@@ -107,11 +106,18 @@ class App(ctk.CTk):
         self._select_frame("Téléchargeur")
 
     def _select_frame(self, name):
-        for frame in self.frames.values():
-            frame.pack_forget()
+        # Cacher la frame actuelle
+        if self.current_frame_name and self.current_frame_name in self.frames:
+            self.frames[self.current_frame_name].pack_forget()
 
+        # Créer la frame si elle n'existe pas encore
+        if name not in self.frames:
+            self.frames[name] = self.frame_classes[name](self.content_frame)
+
+        # Afficher la frame
         self.frames[name].pack(fill="both", expand=True)
         self.label_page.configure(text=name)
+        self.current_frame_name = name
 
     def _toggle_sidebar(self):
         if self._sidebar_visible:
