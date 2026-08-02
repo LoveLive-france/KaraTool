@@ -2,6 +2,7 @@ import threading
 import customtkinter as ctk
 
 from ui.tabs.tab_telechargeur import TabTelechargeur
+from ui.tabs.tab_scraper_paroles import TabScraperParoles
 from ui.tabs.tab_texte_japonais import TabTexteJaponais
 from ui.tabs.tab_encodage import TabEncodeur
 from ui.tabs.tab_cover_audio import TabCoverAudio
@@ -30,6 +31,7 @@ class App(ctk.CTk):
         # Dictionnaire qui mappe les noms des frames à leurs classes
         self.frame_classes = {
             "Téléchargeur": TabTelechargeur,
+            "Scraper Paroles": TabScraperParoles,
             "Formattage Kara": TabTexteJaponais,
             "Réencodage": TabEncodeur,
             "Cover Audio": TabCoverAudio,
@@ -105,17 +107,18 @@ class App(ctk.CTk):
 
         self._select_frame("Téléchargeur")
 
+    def obtenir_ou_creer_frame(self, name):
+        if name not in self.frames:
+            self.frames[name] = self.frame_classes[name](self.content_frame)
+        return self.frames[name]
+
     def _select_frame(self, name):
         # Cacher la frame actuelle
         if self.current_frame_name and self.current_frame_name in self.frames:
             self.frames[self.current_frame_name].pack_forget()
 
-        # Créer la frame si elle n'existe pas encore
-        if name not in self.frames:
-            self.frames[name] = self.frame_classes[name](self.content_frame)
-
         # Afficher la frame
-        self.frames[name].pack(fill="both", expand=True)
+        self.obtenir_ou_creer_frame(name).pack(fill="both", expand=True)
         self.label_page.configure(text=name)
         self.current_frame_name = name
 
