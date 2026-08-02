@@ -3,7 +3,7 @@ yt-dlp
 pyinstaller
 pytest
 pre-commit
-ruff
+ruff==0.15.14
 cutlet
 fugashi[unidic-lite]
 requests

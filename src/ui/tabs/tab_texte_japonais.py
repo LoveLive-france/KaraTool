@@ -149,6 +149,10 @@ class TabTexteJaponais(ctk.CTkFrame):
             self._fermer_deroulant()
             self._ouvrir_selecteur_styles()
 
+    def definir_texte_japonais(self, texte: str) -> None:
+        self._zone_texte_japonais.delete("1.0", "end")
+        self._zone_texte_japonais.insert("1.0", texte)
+
     def _on_romaniser(self):
         contenu = self._zone_texte_japonais.get("1.0", "end-1c")
         romaji = romaniser_texte(
